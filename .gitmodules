@@ -1,0 +1,9 @@
+[submodule "justina_description"]
+	path = justina_description
+	url = https://github.com/Biorobotica-UNAM/justina_description.git
+[submodule "base_interfaces"]
+	path = base_interfaces
+	url = https://github.com/Biorobotica-UNAM/base_interfaces.git
+[submodule "base"]
+	path = base
+	url = https://github.com/Biorobotica-UNAM/base.git
