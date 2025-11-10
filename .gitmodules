@@ -7,6 +7,6 @@
 [submodule "base"]
 	path = base
 	url = https://github.com/Biorobotica-UNAM/base.git
-[submodule "/home/rafael/justina_ws/Hardware/arms"]
+[submodule "arms"]
 	path = arms
 	url = https://github.com/Biorobotica-UNAM/arms.git
