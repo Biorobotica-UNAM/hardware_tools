@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- === Robotino Arguments === -->
+  <arg name="namespace"
+       default=""
+       description="Top-level namespace for the Robotino base"/>
+
+  <arg name="use_sim_time"
+       default="false"
+       description="Use simulation time (/clock)"/>
+
+  <arg name="launch_jsb"
+       default="false"
+       description="Launch joint_state_publisher"/>
+
+  <arg name="hostname"
+       default="172.27.1.1"
+       description="Robotino hostname or IP address"/>
+
+  <arg name="rsp_freq"
+       default="20.0"
+       description="Update rate for robot_state_publisher"/>
+
+  <arg name="bumper_timeout"
+       default="0.0"
+       description="Time before bumper stop triggers"/>
+
+  <arg name="motor_timeout"
+       default="0.0"
+       description="Motor timeout setting"/>
+
+  <arg name="launch_odom_tf"
+       default="true"
+       description="Publish odom TF frame"/>
+
+  <!-- Robot description (Robotino xacro) -->
+  <arg name="robot_description"
+       default="$(find-pkg-share justina_description)/urdf/robotino/robotino.urdf.xacro"
+       description="Path to Robotino .xacro file"/>
+
+  <!-- Include Robotino driver launch -->
+  <include file="$(find-pkg-share base)/launch/robotino_driver.launch.py">
+    <arg name="namespace"         value="$(var namespace)"/>
+    <arg name="use_sim_time"      value="$(var use_sim_time)"/>
+    <arg name="launch_jsb"        value="$(var launch_jsb)"/>
+    <arg name="robot_description" value="$(var robot_description)"/>
+    <arg name="hostname"          value="$(var hostname)"/>
+    <arg name="rsp_freq"          value="$(var rsp_freq)"/>
+    <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
+    <arg name="motor_timeout"     value="$(var motor_timeout)"/>
+    <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
+  </include>
+
+</launch>
