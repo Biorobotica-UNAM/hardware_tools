@@ -1,11 +1,5 @@
 #pragma once
 
-#include <string>
-#include <mutex>
-#include <memory>
-#include <chrono>
-#include <thread>
-
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/float64.hpp"
@@ -17,7 +11,8 @@
 class Hardware
 {
 private:
-    rclcpp::Node::SharedPtr node;
+    // Constructor
+    Hardware(rclcpp::Node::SharedPtr node);
 
     // Publishers
 
@@ -29,14 +24,9 @@ private:
 
 
     // Attributes
+    rclcpp::Node::SharedPtr node;
     
 public:
-    // Constructor
-    Hardware(rclcpp::Node::SharedPtr node);
-    
-    // Destructor
-    ~Hardware();
-
     // Methods
     
 };
