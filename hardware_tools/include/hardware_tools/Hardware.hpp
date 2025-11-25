@@ -19,10 +19,11 @@ public:
 
     void CloseGripper();
     
+    void MoveHead(double pan, double tilt);
 private:
     // Publishers
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr pub_goal_gripper;
-
+    rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_head_angles;
     //Subscribers
 
 
