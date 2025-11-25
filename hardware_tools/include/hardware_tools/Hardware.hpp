@@ -15,11 +15,13 @@ public:
     Hardware(rclcpp::Node::SharedPtr node);
 
     // Methods
+    void OpenGripper();
 
+    void CloseGripper();
     
 private:
     // Publishers
-
+    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr pub_goal_gripper;
 
     //Subscribers
 
