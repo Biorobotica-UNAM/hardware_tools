@@ -10,10 +10,14 @@
 
 class Hardware
 {
-private:
+public:
     // Constructor
     Hardware(rclcpp::Node::SharedPtr node);
 
+    // Methods
+
+    
+private:
     // Publishers
 
 
@@ -22,11 +26,7 @@ private:
 
     // Clients
 
-
+    
     // Attributes
-    rclcpp::Node::SharedPtr node;
-    
-public:
-    // Methods
-    
+    rclcpp::Node::SharedPtr node;    
 };
