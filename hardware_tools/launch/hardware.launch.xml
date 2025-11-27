@@ -1,11 +1,17 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- === Robotino Arguments === -->
+  <!-- === Global HW namespace === -->
   <arg name="namespace"
-       default=""
-       description="Top-level namespace for the Robotino base"/>
+       default="hardware"
+       description="Top-level namespace for all hardware nodes"/>
 
+  <!-- tf_prefix típico: que coincida con el namespace -->
+  <arg name="tf_prefix"
+       default="$(var namespace)/"
+       description="TF prefix for all hardware frames"/>
+
+  <!-- === Robotino Arguments === -->
   <arg name="use_sim_time"
        default="false"
        description="Use simulation time (/clock)"/>
@@ -36,14 +42,16 @@
 
   <!-- Robot description (Robotino xacro) -->
   <arg name="robot_description"
-       default="$(find-pkg-share justina_description)/urdf/robotino/robotino.urdf.xacro"
+       default="$(find-pkg-share justina_description)/urdf/justina/justina.xacro"
        description="Path to Robotino .xacro file"/>
 
   <group>
-    <ros_push_namespace namespace="hardware"/>
-    
-    <!-- Include Robotino driver launch -->
-    <include file="$(find-pkg-share base)/launch/robotino_driver.launch.py">
+    <push-ros-namespace namespace="$(var namespace)"/>
+
+    <!-- Base driver launch -->
+    <include file="$(find-pkg-share base)/launch/base_driver.launch.xml">
+      <arg name="namespace"         value="base"/>
+      <arg name="tf_prefix"         value=""/>
       <arg name="use_sim_time"      value="$(var use_sim_time)"/>
       <arg name="launch_jsb"        value="$(var launch_jsb)"/>
       <arg name="robot_description" value="$(var robot_description)"/>
@@ -53,6 +61,9 @@
       <arg name="motor_timeout"     value="$(var motor_timeout)"/>
       <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
     </include>
+
+    <!-- Include Kinect pointcloud launch -->
+    <include file="$(find-pkg-share kinect_ros2)/launch/pointcloud.launch.py" />
 
     <include file="$(find-pkg-share arms)/launch/arm.launch.xml"/>
   </group>
