@@ -1,11 +1,17 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- === Robotino Arguments === -->
+  <!-- === Global HW namespace === -->
   <arg name="namespace"
-       default=""
-       description="Top-level namespace for the Robotino base"/>
+       default="hardware"
+       description="Top-level namespace for all hardware nodes"/>
 
+  <!-- tf_prefix típico: que coincida con el namespace -->
+  <arg name="tf_prefix"
+       default="$(var namespace)/"
+       description="TF prefix for all hardware frames"/>
+
+  <!-- === Robotino Arguments === -->
   <arg name="use_sim_time"
        default="false"
        description="Use simulation time (/clock)"/>
@@ -36,21 +42,28 @@
 
   <!-- Robot description (Robotino xacro) -->
   <arg name="robot_description"
-       default="$(find-pkg-share justina_description)/urdf/robotino/robotino.urdf.xacro"
+       default="$(find-pkg-share justina_description)/urdf/justina/justina.xacro"
        description="Path to Robotino .xacro file"/>
 
-  <!-- Include Robotino driver launch -->
-  <include file="$(find-pkg-share base)/launch/robotino_driver.launch.py">
-    <arg name="namespace"         value="$(var namespace)"/>
-    <arg name="use_sim_time"      value="$(var use_sim_time)"/>
-    <arg name="launch_jsb"        value="$(var launch_jsb)"/>
-    <arg name="robot_description" value="$(var robot_description)"/>
-    <arg name="hostname"          value="$(var hostname)"/>
-    <arg name="rsp_freq"          value="$(var rsp_freq)"/>
-    <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
-    <arg name="motor_timeout"     value="$(var motor_timeout)"/>
-    <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
-  </include>
+  <group>
+    <push-ros-namespace namespace="$(var namespace)"/>
+
+    <!-- Base driver launch -->
+    <include file="$(find-pkg-share base)/launch/base_driver.launch.xml">
+      <arg name="namespace"         value="base"/>
+      <arg name="tf_prefix"         value=""/>
+
+      <arg name="use_sim_time"      value="$(var use_sim_time)"/>
+      <arg name="launch_jsb"        value="$(var launch_jsb)"/>
+      <arg name="robot_description" value="$(var robot_description)"/>
+      <arg name="hostname"          value="$(var hostname)"/>
+      <arg name="rsp_freq"          value="$(var rsp_freq)"/>
+      <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
+      <arg name="motor_timeout"     value="$(var motor_timeout)"/>
+      <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
+    </include>
+
+  </group>
 
   <!-- Include Kinect pointcloud launch -->
     <include file="$(find-pkg-share kinect_ros2)/launch/pointcloud.launch.py" />
