@@ -62,7 +62,7 @@
       <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
     </include>
 
-  <!-- Include Kinect pointcloud launch -->
+    <!-- Include Kinect pointcloud launch -->
     <include file="$(find-pkg-share kinect_ros2)/launch/pointcloud.launch.py" />
 
     <include file="$(find-pkg-share arms)/launch/arm.launch.xml"/>
