@@ -52,7 +52,6 @@
     <include file="$(find-pkg-share base)/launch/base_driver.launch.xml">
       <arg name="namespace"         value="base"/>
       <arg name="tf_prefix"         value=""/>
-
       <arg name="use_sim_time"      value="$(var use_sim_time)"/>
       <arg name="launch_jsb"        value="$(var launch_jsb)"/>
       <arg name="robot_description" value="$(var robot_description)"/>
@@ -63,9 +62,9 @@
       <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
     </include>
 
-  </group>
-
   <!-- Include Kinect pointcloud launch -->
     <include file="$(find-pkg-share kinect_ros2)/launch/pointcloud.launch.py" />
 
+    <include file="$(find-pkg-share arms)/launch/arm.launch.xml"/>
+  </group>
 </launch>
