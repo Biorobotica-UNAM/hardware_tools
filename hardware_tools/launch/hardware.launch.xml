@@ -65,4 +65,7 @@
 
   </group>
 
+  <!-- Include Kinect pointcloud launch -->
+    <include file="$(find-pkg-share kinect_ros2)/launch/pointcloud.launch.py" />
+
 </launch>
