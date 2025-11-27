@@ -13,4 +13,4 @@
 [submodule "arms"]
 	path = arms
 	url = https://github.com/Biorobotica-UNAM/arms.git
-	branch = main
+	branch = freq_testing

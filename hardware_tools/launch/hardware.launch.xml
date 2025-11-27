@@ -39,17 +39,21 @@
        default="$(find-pkg-share justina_description)/urdf/robotino/robotino.urdf.xacro"
        description="Path to Robotino .xacro file"/>
 
-  <!-- Include Robotino driver launch -->
-  <include file="$(find-pkg-share base)/launch/robotino_driver.launch.py">
-    <arg name="namespace"         value="$(var namespace)"/>
-    <arg name="use_sim_time"      value="$(var use_sim_time)"/>
-    <arg name="launch_jsb"        value="$(var launch_jsb)"/>
-    <arg name="robot_description" value="$(var robot_description)"/>
-    <arg name="hostname"          value="$(var hostname)"/>
-    <arg name="rsp_freq"          value="$(var rsp_freq)"/>
-    <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
-    <arg name="motor_timeout"     value="$(var motor_timeout)"/>
-    <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
-  </include>
+  <group>
+    <ros_push_namespace namespace="hardware"/>
+    
+    <!-- Include Robotino driver launch -->
+    <include file="$(find-pkg-share base)/launch/robotino_driver.launch.py">
+      <arg name="use_sim_time"      value="$(var use_sim_time)"/>
+      <arg name="launch_jsb"        value="$(var launch_jsb)"/>
+      <arg name="robot_description" value="$(var robot_description)"/>
+      <arg name="hostname"          value="$(var hostname)"/>
+      <arg name="rsp_freq"          value="$(var rsp_freq)"/>
+      <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
+      <arg name="motor_timeout"     value="$(var motor_timeout)"/>
+      <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
+    </include>
 
+    <include file="$(find-pkg-share arms)/launch/arm.launch.xml"/>
+  </group>
 </launch>
