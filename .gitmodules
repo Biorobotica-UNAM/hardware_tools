@@ -14,6 +14,6 @@
 	path = arms
 	url = https://github.com/Biorobotica-UNAM/arms.git
 	branch = main
-[submodule "Hardware/kinect_ros2"]
-	path = Hardware/kinect_ros2
+[submodule "/kinect_ros2"]
+	path = /kinect_ros2
 	url = https://github.com/fadlio/kinect_ros2.git
