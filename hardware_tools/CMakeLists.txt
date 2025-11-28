@@ -31,12 +31,17 @@ ament_target_dependencies(hardware_tools
 )
 
 install(
-  DIRECTORY launch include
-  DESTINATION share/${PROJECT_NAME}
+  DIRECTORY include
+  DESTINATION include
 )
 
 install(TARGETS hardware_tools
   DESTINATION lib
+)
+
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_export_include_directories(include)
