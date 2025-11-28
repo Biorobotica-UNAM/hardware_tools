@@ -31,7 +31,7 @@ ament_target_dependencies(hardware_tools
 )
 
 install(
-  DIRECTORY include
+  DIRECTORY include/
   DESTINATION include
 )
 
