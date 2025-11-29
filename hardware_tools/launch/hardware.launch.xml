@@ -47,6 +47,10 @@
 
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
+    
+     <set_remap from="/$(var namespace)/base/joint_states"  to="/$(var namespace)/joint_states"/>
+     <set_remap from="/$(var namespace)/head/joint_states"  to="/$(var namespace)/joint_states"/>
+     <set_remap from="/$(var namespace)/arms/joint_states"   to="/$(var namespace)/joint_states"/>
 
     <!-- Base driver launch -->
     <include file="$(find-pkg-share base)/launch/base_driver.launch.xml">
@@ -62,9 +66,11 @@
       <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
     </include>
 
-    <!-- Include Kinect pointcloud launch -->
-    <include file="$(find-pkg-share kinect_ros2)/launch/pointcloud.launch.py" />
+    <!-- Head -->
+    <include file="$(find-pkg-share head)/launch/head.launch.xml" />
 
+    <!-- Include Kinect pointcloud launch -->
+    <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml" />
     <include file="$(find-pkg-share arms)/launch/arm.launch.xml"/>
   </group>
 </launch>

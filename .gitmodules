@@ -14,3 +14,9 @@
 	path = arms
 	url = https://github.com/Biorobotica-UNAM/arms.git
 	branch = freq_testing
+[submodule "kinect_ros2"]
+	path = kinect_ros2
+	url = https://github.com/Biorobotica-UNAM/kinect_ros2.git
+[submodule "head"]
+	path = head
+	url = https://github.com/Biorobotica-UNAM/head.git
