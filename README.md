@@ -1,2 +1,2 @@
 # hardware_tools
-Biorobotis-Lab Hardware module
+Biorobotis-Lab hardware_tools package to interface hardware nodes.
