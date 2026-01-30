@@ -7,6 +7,7 @@
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "trajectory_msgs/msg/joint_trajectory.hpp"
 #include "tf2_ros/transform_broadcaster.h"
+#include "std_srvs/srv/trigger.hpp"
 
 class Hardware
 {
@@ -16,16 +17,18 @@ public:
 
     // Methods
     void OpenGripper();
-
     void CloseGripper();
-
     void RelaxGripper();
-    
     void MoveHead(double pan, double tilt);
+    bool CheckDoor();
+    
 private:
     // Publishers
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr pub_goal_gripper;
     rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_head_angles;
+    
+    // Service client
+    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr cli_check_door;
     
     // Attributes
     rclcpp::Node::SharedPtr node;    

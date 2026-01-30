@@ -68,6 +68,9 @@
 
     <!-- Head -->
     <include file="$(find-pkg-share head)/launch/head.launch.xml" />
+    
+    <!-- Door detector -->
+    <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml" />
 
     <!-- Include Kinect pointcloud launch -->
     <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml" />

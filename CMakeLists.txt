@@ -11,6 +11,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 include_directories(
   include
@@ -27,6 +28,7 @@ ament_target_dependencies(hardware_tools
   std_msgs
   sensor_msgs
   trajectory_msgs
+  std_srvs
   tf2_ros
 )
 
