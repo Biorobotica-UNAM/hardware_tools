@@ -4,11 +4,10 @@ Hardware::Hardware(rclcpp::Node::SharedPtr node)
 		: node(node) {
 	// Initialize publishers
 	pub_goal_gripper = node->create_publisher<std_msgs::msg::Float64>("/hardware/arms/goal_gripper", 10);
-	pub_head_angles = node->create_publisher<std_msgs::msg::Float64MultiArray>("/hardware/head/angles", 10);
-	
+	pub_head_angles = node->create_publisher<std_msgs::msg::Float64MultiArray>("/hardware/head/goal_pose", 10);
+
 	// Initialize client
 	cli_check_door = node->create_client<std_srvs::srv::Trigger>("/hardware/door_detector/check");
-
 }
 
 // Methods
