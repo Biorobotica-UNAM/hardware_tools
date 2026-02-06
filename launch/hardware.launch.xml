@@ -69,7 +69,7 @@
     <!-- Head -->
     <include file="$(find-pkg-share head)/launch/head.launch.xml" />
     
-    <!-- Arm -->
+    <!-- Right Arm -->
     <include file="$(find-pkg-share arms)/launch/right_arm.launch.xml" />
     
     <!-- Door detector -->
@@ -77,6 +77,5 @@
 
     <!-- Include Kinect pointcloud launch -->
     <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml" />
-    <include file="$(find-pkg-share arms)/launch/arm.launch.xml"/>
   </group>
 </launch>
