@@ -32,6 +32,15 @@ ament_target_dependencies(hardware_tools
   tf2_ros
 )
 
+ament_export_dependencies(
+  rclcpp
+  std_msgs
+  sensor_msgs
+  trajectory_msgs
+  std_srvs
+  tf2_ros
+)
+
 install(
   DIRECTORY include/
   DESTINATION include
