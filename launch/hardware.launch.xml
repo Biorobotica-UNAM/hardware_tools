@@ -65,8 +65,12 @@
       <arg name="motor_timeout"     value="$(var motor_timeout)"/>
       <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
     </include>
+  </group>
 
-    <!-- Head -->
+
+  <group>
+    <push-ros-namespace namespace="$(var namespace)"/>
+     <!-- Head -->
     <include file="$(find-pkg-share head)/launch/head.launch.xml" />
     
     <!-- Right Arm -->
@@ -77,5 +81,6 @@
 
     <!-- Include Kinect pointcloud launch -->
     <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml" />
-  </group>
+</group>
+
 </launch>
