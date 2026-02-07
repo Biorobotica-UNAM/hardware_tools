@@ -67,7 +67,6 @@
     </include>
   </group>
 
-
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
      <!-- Head -->
@@ -81,6 +80,6 @@
 
     <!-- Include Kinect pointcloud launch -->
     <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml" />
-</group>
+  </group>
 
 </launch>
