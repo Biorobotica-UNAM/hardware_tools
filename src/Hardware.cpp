@@ -1,61 +1,109 @@
 #include "hardware_tools/Hardware.hpp"
 
-Hardware::Hardware(rclcpp::Node::SharedPtr node) 
-		: node(node) {
-	// Initialize publishers
-	pub_goal_gripper = node->create_publisher<std_msgs::msg::Float64>("/hardware/arms/goal_gripper", 10);
-	pub_head_angles = node->create_publisher<std_msgs::msg::Float64MultiArray>("/hardware/head/goal_pose", 10);
+#include <future>
 
-	// Initialize client
-	cli_check_door = node->create_client<std_srvs::srv::Trigger>("/hardware/door_detector/check");
+Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
+    : node_(node)
+{
+    pub_goal_gripper_ =
+        node_->create_publisher<std_msgs::msg::Float64>(
+            "/hardware/arms/goal_gripper", 10);
+
+    pub_head_angles_ =
+        node_->create_publisher<std_msgs::msg::Float64MultiArray>(
+            "/hardware/head/goal_pose", 10);
+
+    cli_check_door_ =
+        node_->create_client<std_srvs::srv::Trigger>(
+            "/hardware/door_detector/check");
 }
 
-// Methods
-void Hardware::OpenGripper() {
-	auto message = std_msgs::msg::Float64();
-	message.data = -0.5236;
-	this->pub_goal_gripper->publish(message);
+// ===== Gripper =====
+
+void Hardware::OpenGripper()
+{
+    std_msgs::msg::Float64 msg;
+    msg.data = -0.5236;
+    pub_goal_gripper_->publish(msg);
 }
 
-void Hardware::CloseGripper() {
-	auto message = std_msgs::msg::Float64();
-	message.data = 0.2618;
-	this->pub_goal_gripper->publish(message);
+void Hardware::CloseGripper()
+{
+    std_msgs::msg::Float64 msg;
+    msg.data = 0.2618;
+    pub_goal_gripper_->publish(msg);
 }
 
-void Hardware::RelaxGripper() {
-	auto message = std_msgs::msg::Float64();
-	message.data = 0.0;
-	this->pub_goal_gripper->publish(message);
+void Hardware::RelaxGripper()
+{
+    std_msgs::msg::Float64 msg;
+    msg.data = 0.0;
+    pub_goal_gripper_->publish(msg);
 }
+
+// ===== Head =====
 
 void Hardware::MoveHead(double pan, double tilt)
 {
     std_msgs::msg::Float64MultiArray msg;
     msg.data = {pan, tilt};
-    pub_head_angles->publish(msg);
+    pub_head_angles_->publish(msg);
 }
+
+// ---------------------------------------------------------
+// Wait for service
+// ---------------------------------------------------------
+
+bool Hardware::waitForService(
+    const rclcpp::ClientBase::SharedPtr& client,
+    const std::chrono::milliseconds& timeout) const
+{
+    return client->wait_for_service(timeout);
+}
+
+// ---------------------------------------------------------
+// Check door
+// ---------------------------------------------------------
 
 bool Hardware::CheckDoor()
 {
-    if (!cli_check_door->wait_for_service(std::chrono::milliseconds(500)))
+    using namespace std::chrono_literals;
+
+    if (!waitForService(cli_check_door_, 500ms))
     {
-        RCLCPP_WARN(node->get_logger(),
-            "DoorDetector service not available");
+        RCLCPP_WARN(node_->get_logger(),
+            "Servicio /hardware/door_detector/check no disponible");
         return false;
     }
 
     auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
-    auto future = cli_check_door->async_send_request(request);
 
-    if (rclcpp::spin_until_future_complete(
-            node, future, std::chrono::milliseconds(500))
-        != rclcpp::FutureReturnCode::SUCCESS)
-    {
-        RCLCPP_WARN(node->get_logger(),
-            "Failed to call DoorDetector service");
-        return false;
-    }
+    auto prom = std::make_shared<std::promise<bool>>();
+    auto fut = prom->get_future();
 
-    return future.get()->success;
+    cli_check_door_->async_send_request(
+        request,
+        [this, prom](
+            std::shared_future<
+                std_srvs::srv::Trigger::Response::SharedPtr> future)
+        {
+            try
+            {
+                prom->set_value(future.get()->success);
+            }
+            catch (const std::exception& e)
+            {
+                RCLCPP_WARN(node_->get_logger(),
+                    "Excepción en DoorDetector: %s", e.what());
+                prom->set_value(false);
+            }
+        });
+
+    if (fut.wait_for(500ms) == std::future_status::ready)
+        return fut.get();
+
+    RCLCPP_WARN(node_->get_logger(),
+        "Timeout esperando DoorDetector");
+    return false;
 }
+
