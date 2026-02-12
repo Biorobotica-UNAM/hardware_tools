@@ -52,6 +52,7 @@
      <set_remap from="/$(var namespace)/head/joint_states"  to="/$(var namespace)/joint_states"/>
      <set_remap from="/$(var namespace)/arms/joint_states"   to="/$(var namespace)/joint_states"/>
 
+
     <!-- Base driver launch -->
     <include file="$(find-pkg-share base)/launch/base_driver.launch.xml">
       <arg name="namespace"         value="base"/>
@@ -75,6 +76,9 @@
     <!-- Right Arm -->
     <include file="$(find-pkg-share arms)/launch/right_arm.launch.xml" />
     
+     <!-- Torso -->
+     <include file="$(find-pkg-share torso)/launch/torso.launch.xml" />
+
     <!-- Door detector -->
     <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml" />
 

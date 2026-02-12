@@ -12,6 +12,10 @@ Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
     pub_head_angles_ =
         node_->create_publisher<std_msgs::msg::Float64MultiArray>(
             "/hardware/head/goal_pose", 10);
+    
+    pub_torso_target_ =
+        node_->create_publisher<std_msgs::msg::Float32>(
+            "/hardware/torso/goal", 10);
 
     cli_check_door_ =
         node_->create_client<std_srvs::srv::Trigger>(
@@ -48,6 +52,15 @@ void Hardware::MoveHead(double pan, double tilt)
     std_msgs::msg::Float64MultiArray msg;
     msg.data = {pan, tilt};
     pub_head_angles_->publish(msg);
+}
+
+// ===== Torso =====
+
+void Hardware::MoveTorso(float target)
+{
+    std_msgs::msg::Float32 msg;
+    msg.data = target;
+    pub_torso_target_->publish(msg);
 }
 
 // ---------------------------------------------------------
