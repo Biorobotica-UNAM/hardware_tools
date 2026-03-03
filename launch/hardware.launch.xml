@@ -120,5 +120,15 @@
                name="hsr_head_node" 
                output="screen"
                if="$(var use_takeshi)"/>
+          <node pkg="hsr_hardware" 
+               exec="hsr_talk_node" 
+               name="hsr_talk_node" 
+               output="screen"
+               if="$(var use_takeshi)"/>
+          <node pkg="hsr_hardware" 
+               exec="hsr_bumper_node" 
+               name="hsr_bumper_node" 
+               output="screen"
+               if="$(var use_takeshi)"/>
      </group>
 </launch>
