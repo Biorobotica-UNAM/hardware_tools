@@ -130,5 +130,19 @@
                name="hsr_bumper_node" 
                output="screen"
                if="$(var use_takeshi)"/>
+
+          <node
+               pkg="depth_image_proc"
+               exec="point_cloud_xyz_node"
+               name="point_cloud_xyz"
+               output="screen"
+               if="$(var use_takeshi)">
+
+               <remap from="image_rect" to="/head_rgbd_sensor/depth_registered/image_rect_raw"/>
+               <remap from="camera_info" to="/head_rgbd_sensor/depth_registered/camera_info"/>
+               <remap from="points" to="/hardware/camera/pointcloud2"/>
+
+          </node>
+
      </group>
 </launch>
