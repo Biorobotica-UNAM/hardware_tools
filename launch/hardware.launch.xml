@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <launch>
 
+  <arg name="use_takeshi"
+     default="false"
+     description="If true, skip hardware includes for Takeshi"/>
+
   <!-- === Global HW namespace === -->
   <arg name="namespace"
        default="hardware"
@@ -43,47 +47,102 @@
   <!-- Robot description (Robotino xacro) -->
   <arg name="robot_description"
        default="$(find-pkg-share justina_description)/urdf/justina/justina.xacro"
-       description="Path to Robotino .xacro file"/>
+       description="Path to Robotino .xacro file"
+       unless="$(var use_takeshi)"/>
 
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
+
     
      <set_remap from="/$(var namespace)/base/joint_states"  to="/$(var namespace)/joint_states"/>
      <set_remap from="/$(var namespace)/head/joint_states"  to="/$(var namespace)/joint_states"/>
      <set_remap from="/$(var namespace)/arms/joint_states"   to="/$(var namespace)/joint_states"/>
 
 
-    <!-- Base driver launch -->
-    <include file="$(find-pkg-share base)/launch/base_driver.launch.xml">
-      <arg name="namespace"         value="base"/>
-      <arg name="tf_prefix"         value=""/>
-      <arg name="use_sim_time"      value="$(var use_sim_time)"/>
-      <arg name="launch_jsb"        value="$(var launch_jsb)"/>
-      <arg name="robot_description" value="$(var robot_description)"/>
-      <arg name="hostname"          value="$(var hostname)"/>
-      <arg name="rsp_freq"          value="$(var rsp_freq)"/>
-      <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
-      <arg name="motor_timeout"     value="$(var motor_timeout)"/>
-      <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
-    </include>
+     <!-- Base driver launch -->
+     <include file="$(find-pkg-share base)/launch/base_driver.launch.xml"
+          unless="$(var use_takeshi)">
+          <arg name="namespace"         value="base"/>
+          <arg name="tf_prefix"         value=""/>
+          <arg name="use_sim_time"      value="$(var use_sim_time)"/>
+          <arg name="launch_jsb"        value="$(var launch_jsb)"/>
+          <arg name="robot_description" value="$(var robot_description)"/>
+          <arg name="hostname"          value="$(var hostname)"/>
+          <arg name="rsp_freq"          value="$(var rsp_freq)"/>
+          <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
+          <arg name="motor_timeout"     value="$(var motor_timeout)"/>
+          <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
+     </include>
   </group>
 
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
-     <!-- Head -->
-    <include file="$(find-pkg-share head)/launch/head.launch.xml" />
-    
-    <!-- Right Arm -->
-    <include file="$(find-pkg-share arms)/launch/right_arm.launch.xml" />
-    
-     <!-- Torso -->
-     <include file="$(find-pkg-share torso)/launch/torso.launch.xml" />
 
-    <!-- Door detector -->
-    <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml" />
+          <!-- === Robotino Hardware === -->
+          <include file="$(find-pkg-share robotino_hardware)/launch/robotino_hardware.launch.xml" 
+          unless="$(var use_takeshi)"/>
+          <!-- Head -->
+          <include file="$(find-pkg-share head)/launch/head.launch.xml" 
+          unless="$(var use_takeshi)"/>
+          
+          <!-- Right Arm -->
+          <include file="$(find-pkg-share arms)/launch/right_arm.launch.xml" 
+          unless="$(var use_takeshi)"/>
+          
+          <!-- Torso -->
+          <include file="$(find-pkg-share torso)/launch/torso.launch.xml" 
+          unless="$(var use_takeshi)"/>
 
-    <!-- Include Kinect pointcloud launch -->
-    <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml" />
+
+          <!-- Include Kinect pointcloud launch -->
+          <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml"
+           unless="$(var use_takeshi)"/>
+          
+          <!-- Door detector -->
+          <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml" />
   </group>
 
+  <group>
+    <push-ros-namespace namespace="$(var namespace)"/>
+          <!-- === Takeshi Hardware === -->
+          <node pkg="hsr_hardware" 
+               exec="hsr_bringup" 
+               name="hsr_bringup" 
+               output="screen"
+               if="$(var use_takeshi)"/>
+          <node pkg="hsr_hardware" 
+               exec="hsr_arm_node" 
+               name="hsr_arm_node" 
+               output="screen"
+               if="$(var use_takeshi)"/>
+          <node pkg="hsr_hardware" 
+               exec="hsr_head_node" 
+               name="hsr_head_node" 
+               output="screen"
+               if="$(var use_takeshi)"/>
+          <node pkg="hsr_hardware" 
+               exec="hsr_talk_node" 
+               name="hsr_talk_node" 
+               output="screen"
+               if="$(var use_takeshi)"/>
+          <node pkg="hsr_hardware" 
+               exec="hsr_bumper_node" 
+               name="hsr_bumper_node" 
+               output="screen"
+               if="$(var use_takeshi)"/>
+
+          <node
+               pkg="depth_image_proc"
+               exec="point_cloud_xyz_node"
+               name="point_cloud_xyz"
+               output="screen"
+               if="$(var use_takeshi)">
+
+               <remap from="image_rect" to="/head_rgbd_sensor/depth_registered/image_rect_raw"/>
+               <remap from="camera_info" to="/head_rgbd_sensor/depth_registered/camera_info"/>
+               <remap from="points" to="/hardware/camera/pointcloud2"/>
+
+          </node>
+
+     </group>
 </launch>
