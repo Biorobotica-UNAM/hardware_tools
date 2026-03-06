@@ -77,10 +77,6 @@
 
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
-
-          <!-- === Robotino Hardware === -->
-          <include file="$(find-pkg-share robotino_hardware)/launch/robotino_hardware.launch.xml" 
-          unless="$(var use_takeshi)"/>
           <!-- Head -->
           <include file="$(find-pkg-share head)/launch/head.launch.xml" 
           unless="$(var use_takeshi)"/>
