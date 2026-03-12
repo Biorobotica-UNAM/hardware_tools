@@ -136,7 +136,7 @@
 
                <remap from="image_rect" to="/head_rgbd_sensor/depth_registered/image_rect_raw"/>
                <remap from="camera_info" to="/head_rgbd_sensor/depth_registered/camera_info"/>
-               <remap from="points" to="/hardware/camera/pointcloud2"/>
+               <remap from="points" to="/hardware/camera/points"/>
 
           </node>
 
