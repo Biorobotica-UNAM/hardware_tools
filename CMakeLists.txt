@@ -66,8 +66,9 @@ install(TARGETS hardware_tools
   DESTINATION lib
 )
 
-install(Target
+install(TARGETS 
   head_control_node
+  DESTINATION lib
 )
 
 install(
