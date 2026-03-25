@@ -28,6 +28,9 @@ add_library(hardware_tools SHARED
 )
 
 add_executable(head_control_node src/head_control_node.cpp)
+add_executable(pointing_node 
+  src/pointing_node.cpp
+  )
 
 
 ament_target_dependencies(hardware_tools
@@ -42,6 +45,16 @@ ament_target_dependencies(hardware_tools
 ament_target_dependencies(head_control_node
   rclcpp
   std_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  actionlib_msgs
+)
+
+ament_target_dependencies(pointing_node
+  rclcpp
+  std_msgs
+  std_srvs
   tf2
   tf2_ros
   tf2_geometry_msgs
@@ -69,6 +82,10 @@ install(TARGETS hardware_tools
 install(TARGETS 
   head_control_node
   DESTINATION lib
+)
+
+install(TARGETS pointing_node
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
