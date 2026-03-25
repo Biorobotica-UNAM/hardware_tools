@@ -79,9 +79,8 @@ install(TARGETS hardware_tools
   DESTINATION lib
 )
 
-install(TARGETS 
-  head_control_node
-  DESTINATION lib
+install(TARGETS head_control_node
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(TARGETS pointing_node
