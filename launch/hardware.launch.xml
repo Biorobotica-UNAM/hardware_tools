@@ -139,4 +139,10 @@
           </node>
 
      </group>
+
+     <node pkg="hardware_tools"
+        exec="head_control_node"
+        name="head_control_node"
+        output="screen">
+     </node>
 </launch>
