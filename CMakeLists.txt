@@ -17,6 +17,8 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
+find_package(geometry_msgs REQUIRED)
+
 include_directories(
   include
   ${rclcpp_INCLUDE_DIRS}
@@ -27,10 +29,9 @@ add_library(hardware_tools SHARED
   src/Hardware.cpp
 )
 
-add_executable(head_control_node src/head_control_node.cpp)
-add_executable(pointing_node 
-  src/pointing_node.cpp
-  )
+add_executable(head_control_node  src/head_control_node.cpp)
+
+add_executable(pointing_node      src/pointing_node.cpp)
 
 
 ament_target_dependencies(hardware_tools
@@ -59,6 +60,7 @@ ament_target_dependencies(pointing_node
   tf2_ros
   tf2_geometry_msgs
   actionlib_msgs
+  geometry_msgs
 )
 
 ament_export_dependencies(
