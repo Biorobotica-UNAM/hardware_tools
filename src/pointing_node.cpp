@@ -121,7 +121,7 @@ private:
         std_msgs::msg::Float64MultiArray arm_msg;
 
         if (use_takeshi_) {
-            arm_msg.data = {0.0, 0.0, 0.0, 0.0};
+            arm_msg.data = {-0.25, 0.0, -1.5, 0.0};
         } else {
             arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
         }
