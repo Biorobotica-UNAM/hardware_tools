@@ -37,7 +37,7 @@ public:
         this->declare_parameter("head_goal_topic", "/hardware/head/goal_pose");
         this->declare_parameter("head_state_topic", "/hardware/head/current_pose");
         this->declare_parameter("arm_goal_topic", "/hardware/arm/goal_pose");
-        this->declare_parameter("camera_frame", "neck_link");
+        this->declare_parameter("camera_frame", "head_pan_link");
         this->declare_parameter("base_frame", "base_link");
 
         use_takeshi_     = this->get_parameter("use_takeshi").as_bool();
