@@ -55,13 +55,15 @@ public:
 
         // Pubs
         head_goal_pub_ = this->create_publisher<std_msgs::msg::Float64MultiArray>(head_goal_topic_, 10);
-        base_cmd_pub_  = this->create_publisher<geometry_msgs::msg::Twist>("/hardware/base/cmd_vel", 10);
+        base_cmd_pub_  = this->create_publisher<geometry_msgs::msg::Twist>("/hardware/base/cmd_vel", rclcpp::QoS(rclcpp::KeepLast(10)).reliable().transient_local());
         arm_goal_pub_  = this->create_publisher<std_msgs::msg::Float64MultiArray>(arm_goal_topic_, 10);
 
         // Service
-        srv_ = this->create_service<std_srvs::srv::Trigger>(
-            "enable",
-            std::bind(&PointingNode::executeMotion, this, std::placeholders::_1, std::placeholders::_2));
+        srv_ = this->create_service<std_srvs::srv::Trigger>("enable",
+                                                            std::bind(&PointingNode::executeMotion,
+                                                            this,
+                                                            std::placeholders::_1,
+                                                            std::placeholders::_2));
 
         RCLCPP_INFO(this->get_logger(), "Pointing node started.");
     }
