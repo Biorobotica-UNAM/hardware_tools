@@ -58,9 +58,15 @@ public:
         base_cmd_pub_  = this->create_publisher<geometry_msgs::msg::Twist>("/hardware/base/cmd_vel", rclcpp::QoS(rclcpp::KeepLast(10)).reliable().transient_local());
         arm_goal_pub_  = this->create_publisher<std_msgs::msg::Float64MultiArray>(arm_goal_topic_, 10);
 
-        // Service
-        srv_ = this->create_service<std_srvs::srv::Trigger>("enable",
-                                                            std::bind(&PointingNode::executeMotion,
+        // Services
+        srv_enable = this->create_service<std_srvs::srv::Trigger>("enable",
+                                                            std::bind(&PointingNode::executeMotion_enable,
+                                                            this,
+                                                            std::placeholders::_1,
+                                                            std::placeholders::_2));
+
+        srv_disable = this->create_service<std_srvs::srv::Trigger>("disable",
+                                                            std::bind(&PointingNode::executeMotion_disable,
                                                             this,
                                                             std::placeholders::_1,
                                                             std::placeholders::_2));
@@ -74,7 +80,8 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr head_goal_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr arm_goal_pub_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr base_cmd_pub_;
-    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_enable;
+    rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr srv_disable;
 
     // TF
     tf2_ros::Buffer tf_buffer_;
@@ -131,7 +138,20 @@ private:
         arm_goal_pub_->publish(arm_msg);
     }
 
-    void executeMotion(
+    void resetArmPose()
+    {
+        std_msgs::msg::Float64MultiArray arm_msg;
+
+        if (use_takeshi_) {
+            arm_msg.data = {0.0, -1.57, -1.57, 0.0};
+        } else {
+            arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        }
+
+        arm_goal_pub_->publish(arm_msg);
+    }
+
+    void executeMotion_enable(
         const std::shared_ptr<std_srvs::srv::Trigger::Request> /*req*/,
         std::shared_ptr<std_srvs::srv::Trigger::Response> res)
     {
@@ -189,6 +209,20 @@ private:
             res->success = false;
             res->message = std::string("TF error: ") + ex.what();
         }
+    }
+
+    void executeMotion_disable(
+        const std::shared_ptr<std_srvs::srv::Trigger::Request> /*req*/,
+        std::shared_ptr<std_srvs::srv::Trigger::Response> res)
+    {
+        // Stop base
+        stopBase();
+
+        // Reset arm
+        resetArmPose();
+
+        res->success = true;
+        res->message = "Pointing motion disabled.";
     }
 };
 

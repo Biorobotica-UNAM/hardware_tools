@@ -26,7 +26,8 @@ public:
     void MoveHead(double pan, double tilt);
     void MoveTorso(float target);
     bool CheckDoor();
-    bool PointingMotion();
+    bool PointingMotionEnable();
+    bool PointingMotionDisable();
 
 private:
     bool waitForService(
@@ -41,6 +42,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr pub_torso_target_;
 
     rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr cli_check_door_;
-    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr cli_pointing_motion_;
+    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr cli_pointing_motion_enable_;
+    rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr cli_pointing_motion_disable_;
 };
 
