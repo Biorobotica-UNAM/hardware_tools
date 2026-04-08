@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="namespace"    default="hardware"/>
+  <arg name="use_takeshi"  default="false"/>
+  <arg name="use_sim_time" default="false"/>
+
+    <group>
+        <push-ros-namespace namespace="$(var namespace)"/>
+
+        <node pkg="hardware_tools"
+                exec="head_control_node"
+                name="head_control_node"
+                output="screen"/>
+
+        <group>
+            <push-ros-namespace namespace="pointing"/>
+
+            <node pkg="hardware_tools"
+                exec="pointing_node"
+                name="pointing_node"
+                output="screen">
+            <param name="use_takeshi" value="$(var use_takeshi)"/>
+            </node>
+        </group>
+
+        <group>
+            <push-ros-namespace namespace="door_detector"/>
+
+            <node pkg="door_detector"
+                exec="door_detector_node"
+                name="door_detector_node"
+                output="screen"/>
+        </group>
+    </group>
+
+</launch>
