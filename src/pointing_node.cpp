@@ -172,7 +172,7 @@ private:
                 const double angular_speed = 0.6;
 
                 cmd.angular.z = (theta < 0.0) ? -angular_speed : angular_speed;
-                const double duration = std::abs(theta / angular_speed) + 0.7;
+                const double duration = std::abs(theta / angular_speed) + 0.3;
 
                 const auto start = this->now();
 
