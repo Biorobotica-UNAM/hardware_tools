@@ -20,6 +20,14 @@ Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
     cli_check_door_ =
         node_->create_client<std_srvs::srv::Trigger>(
             "/hardware/door_detector/check");
+
+    cli_pointing_motion_enable_ =
+        node_->create_client<std_srvs::srv::Trigger>(
+            "/hardware/pointing/enable");
+
+    cli_pointing_motion_disable_ =
+        node_->create_client<std_srvs::srv::Trigger>(
+            "/hardware/pointing/disable");
 }
 
 // ===== Gripper =====
@@ -120,3 +128,87 @@ bool Hardware::CheckDoor()
     return false;
 }
 
+bool Hardware::PointingMotionEnable()
+{
+    using namespace std::chrono_literals;
+
+    if (!waitForService(cli_pointing_motion_enable_, 500ms))
+    {
+        RCLCPP_WARN(node_->get_logger(),
+            "Service /hardware/pointing/enable not available");
+        return false;
+    }
+
+    auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
+
+    auto prom = std::make_shared<std::promise<bool>>();
+    auto fut = prom->get_future();
+
+    cli_pointing_motion_enable_->async_send_request(
+        request,
+        [this, prom](
+            std::shared_future<
+                std_srvs::srv::Trigger::Response::SharedPtr> future)
+        {
+            try
+            {
+                prom->set_value(future.get()->success);
+            }
+            catch (const std::exception& e)
+            {
+                RCLCPP_WARN(node_->get_logger(),
+                    "Excepción en PointingMotion: %s", e.what());
+                prom->set_value(false);
+            }
+        });
+
+    if (fut.wait_for(500ms) == std::future_status::ready)
+        return fut.get();
+
+    RCLCPP_WARN(node_->get_logger(),
+        "Timeout esperando PointingMotion");
+    return false;
+}
+
+
+bool Hardware::PointingMotionDisable()
+{
+    using namespace std::chrono_literals;
+
+    if (!waitForService(cli_pointing_motion_disable_, 500ms))
+    {
+        RCLCPP_WARN(node_->get_logger(),
+            "Service /hardware/pointing/disable not available");
+        return false;
+    }
+
+    auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
+
+    auto prom = std::make_shared<std::promise<bool>>();
+    auto fut = prom->get_future();
+
+    cli_pointing_motion_disable_->async_send_request(
+        request,
+        [this, prom](
+            std::shared_future<
+                std_srvs::srv::Trigger::Response::SharedPtr> future)
+        {
+            try
+            {
+                prom->set_value(future.get()->success);
+            }
+            catch (const std::exception& e)
+            {
+                RCLCPP_WARN(node_->get_logger(),
+                    "Excepción en PointingMotion: %s", e.what());
+                prom->set_value(false);
+            }
+        });
+
+    if (fut.wait_for(500ms) == std::future_status::ready)
+        return fut.get();
+
+    RCLCPP_WARN(node_->get_logger(),
+        "Timeout esperando PointingMotion");
+    return false;
+}

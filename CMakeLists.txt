@@ -8,10 +8,16 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(actionlib_msgs REQUIRED)
+
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+
+find_package(geometry_msgs REQUIRED)
 
 include_directories(
   include
@@ -23,6 +29,11 @@ add_library(hardware_tools SHARED
   src/Hardware.cpp
 )
 
+add_executable(head_control_node  src/head_control_node.cpp)
+
+add_executable(pointing_node      src/pointing_node.cpp)
+
+
 ament_target_dependencies(hardware_tools
   rclcpp
   std_msgs
@@ -30,6 +41,26 @@ ament_target_dependencies(hardware_tools
   trajectory_msgs
   std_srvs
   tf2_ros
+)
+
+ament_target_dependencies(head_control_node
+  rclcpp
+  std_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  actionlib_msgs
+)
+
+ament_target_dependencies(pointing_node
+  rclcpp
+  std_msgs
+  std_srvs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  actionlib_msgs
+  geometry_msgs
 )
 
 ament_export_dependencies(
@@ -49,6 +80,14 @@ install(
 install(TARGETS hardware_tools
   DESTINATION lib
 )
+
+install(TARGETS head_control_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+#install(TARGETS pointing_node
+#  DESTINATION lib/${PROJECT_NAME}
+#)
 
 install(
   DIRECTORY launch

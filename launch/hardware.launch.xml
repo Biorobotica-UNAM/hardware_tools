@@ -50,17 +50,12 @@
        description="Path to Robotino .xacro file"
        unless="$(var use_takeshi)"/>
 
-  <group>
+  <!--group>
     <push-ros-namespace namespace="$(var namespace)"/>
-
-    
-     <set_remap from="/$(var namespace)/base/joint_states"  to="/$(var namespace)/joint_states"/>
-     <set_remap from="/$(var namespace)/head/joint_states"  to="/$(var namespace)/joint_states"/>
-     <set_remap from="/$(var namespace)/arms/joint_states"   to="/$(var namespace)/joint_states"/>
-
+     <set_remap from="/$(var namespace)/base/joint_states"  to="/$(var namespace)/joint_states"/-->
 
      <!-- Base driver launch -->
-     <include file="$(find-pkg-share base)/launch/base_driver.launch.xml"
+     <!--include file="$(find-pkg-share base)/launch/base_driver.launch.xml"
           unless="$(var use_takeshi)">
           <arg name="namespace"         value="base"/>
           <arg name="tf_prefix"         value=""/>
@@ -72,22 +67,25 @@
           <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
           <arg name="motor_timeout"     value="$(var motor_timeout)"/>
           <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
-     </include>
-  </group>
+     </include-->
+  <!--/group-->
 
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
+          <!--set_remap from="/$(var namespace)/head/joint_states"  to="/$(var namespace)/joint_states"/>
+          <set_remap from="/$(var namespace)/arms/joint_states"   to="/$(var namespace)/joint_states"/-->
+
           <!-- Head -->
-          <include file="$(find-pkg-share head)/launch/head.launch.xml" 
-          unless="$(var use_takeshi)"/>
+          <!--include file="$(find-pkg-share head)/launch/head.launch.xml" 
+          unless="$(var use_takeshi)"/-->
           
           <!-- Right Arm -->
-          <include file="$(find-pkg-share arms)/launch/right_arm.launch.xml" 
-          unless="$(var use_takeshi)"/>
+          <!--include file="$(find-pkg-share arms)/launch/right_arm.launch.xml" 
+          unless="$(var use_takeshi)"/-->
           
           <!-- Torso -->
-          <include file="$(find-pkg-share torso)/launch/torso.launch.xml" 
-          unless="$(var use_takeshi)"/>
+          <!--include file="$(find-pkg-share torso)/launch/torso.launch.xml" 
+          unless="$(var use_takeshi)"/-->
 
 
           <!-- Include Kinect pointcloud launch -->
@@ -96,6 +94,9 @@
           
           <!-- Door detector -->
           <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml" />
+
+          <!-- Pointing -->
+          <include file="$(find-pkg-share hardware_tools)/launch/pointing.launch.xml" />
   </group>
 
   <group>
@@ -104,41 +105,41 @@
           <node pkg="hsr_hardware" 
                exec="hsr_bringup" 
                name="hsr_bringup" 
-               output="screen"
                if="$(var use_takeshi)"/>
           <node pkg="hsr_hardware" 
                exec="hsr_arm_node" 
                name="hsr_arm_node" 
-               output="screen"
                if="$(var use_takeshi)"/>
           <node pkg="hsr_hardware" 
                exec="hsr_head_node" 
                name="hsr_head_node" 
-               output="screen"
                if="$(var use_takeshi)"/>
           <node pkg="hsr_hardware" 
                exec="hsr_talk_node" 
                name="hsr_talk_node" 
-               output="screen"
                if="$(var use_takeshi)"/>
           <node pkg="hsr_hardware" 
                exec="hsr_bumper_node" 
                name="hsr_bumper_node" 
-               output="screen"
                if="$(var use_takeshi)"/>
-
           <node
                pkg="depth_image_proc"
                exec="point_cloud_xyz_node"
                name="point_cloud_xyz"
-               output="screen"
+               args="--ros-args --log-level error"
                if="$(var use_takeshi)">
 
                <remap from="image_rect" to="/head_rgbd_sensor/depth_registered/image_rect_raw"/>
                <remap from="camera_info" to="/head_rgbd_sensor/depth_registered/camera_info"/>
-               <remap from="points" to="/hardware/camera/pointcloud2"/>
+               <remap from="points" to="/hardware/camera/points"/>
 
           </node>
 
      </group>
+
+     <node pkg="hardware_tools"
+        exec="head_control_node"
+        name="head_control_node"
+        output="screen">
+     </node>
 </launch>

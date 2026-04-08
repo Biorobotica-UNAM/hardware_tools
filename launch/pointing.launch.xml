@@ -1,0 +1,15 @@
+<launch>
+
+  <group>
+    <push_ros_namespace namespace="pointing" />
+
+    <node
+      pkg="hardware_tools"
+      exec="pointing_node"
+      name="pointing_node"
+      output="screen"
+    />
+  </group>
+
+</launch>
+
