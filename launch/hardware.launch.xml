@@ -96,7 +96,7 @@
           <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml" />
 
           <!-- Pointing -->
-          <include file="$(find-pkg-share hardware_tools)/launch/pointing.launch.xml" />
+          <include file="$(find-pkg-share hardware_tools)/launch/pointing.launch.xml">
                <arg name="use_takeshi" value="$(var use_takeshi)"/>
           </include>
   </group>
