@@ -55,7 +55,7 @@
      <set_remap from="/$(var namespace)/base/joint_states"  to="/$(var namespace)/joint_states"/-->
 
      <!-- Base driver launch -->
-     <!--include file="$(find-pkg-share base)/launch/base_driver.launch.xml"
+     <include file="$(find-pkg-share base)/launch/base_driver.launch.xml"
           unless="$(var use_takeshi)">
           <arg name="namespace"         value="base"/>
           <arg name="tf_prefix"         value=""/>
@@ -67,7 +67,7 @@
           <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
           <arg name="motor_timeout"     value="$(var motor_timeout)"/>
           <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
-     </include-->
+     </include>
   <!--/group-->
 
   <group>
@@ -97,6 +97,8 @@
 
           <!-- Pointing -->
           <include file="$(find-pkg-share hardware_tools)/launch/pointing.launch.xml" />
+               <arg name="use_takeshi" value="$(var use_takeshi)"/>
+          </include>
   </group>
 
   <group>
