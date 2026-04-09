@@ -46,7 +46,7 @@
 
   <!-- Robot description (Robotino xacro) -->
   <arg name="robot_description"
-       default="$(find-pkg-share justina_description)/urdf/justina/justina.xacro"
+       default="$(find-pkg-share justina_description)/webots_env/urdf/Robot.urdf"
        description="Path to Robotino .xacro file"
        unless="$(var use_takeshi)"/>
 
