@@ -72,7 +72,14 @@
       exec="relay"
       name="relay_camera_rgb"
       output="screen"
-      args="/head_rgbd_sensor/rgb/image_raw /hardware/camera/image_raw">
+      args="/head_rgbd_sensor/rgb/image_rect_color /hardware/camera/image_raw">
+    </node>
+
+    <node pkg="topic_tools" 
+      exec="relay" 
+      name="relay_amcl_pose" 
+      output="screen"
+      args="/navigation/amcl_pose /laser_2d_pose">
     </node>
   </group>
 
