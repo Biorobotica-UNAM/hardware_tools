@@ -38,8 +38,8 @@
        description="Publish odom TF (Justina only)"/>
 
   <arg name="robot_description"
-       default="$(find-pkg-share justina_description)/urdf/justina/justina.xacro"
-       description="Path to Justina xacro"
+       default="$(find-pkg-share justina_description)/urdf/justina.urdf"
+       description="Path to Justina urdf"
        unless="$(var use_takeshi)"/>
 
   <!-- Justina hardware -->
