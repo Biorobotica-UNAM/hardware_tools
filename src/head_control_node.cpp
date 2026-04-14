@@ -30,10 +30,10 @@ public:
     this->declare_parameter<std::string>("base_frame", "base_link");
     if (!use_takeshi) {
         this->declare_parameter<std::string>("camera_frame",                "camera_link");
-        this->declare_parameter<std::string>("neck_frame",                  "torso_lift_link");
+        this->declare_parameter<std::string>("neck_frame",                  "neck_link");
     } else {
         this->declare_parameter<std::string>("camera_frame",                "head_rgbd_sensor_rgb_frame");
-        this->declare_parameter<std::string>("neck_frame",                  "neck_link");
+        this->declare_parameter<std::string>("neck_frame",                  "torso_lift_link");
     }
 
     this->declare_parameter<double>("pan_min", -1.57);
