@@ -132,7 +132,7 @@ private:
         if (use_takeshi_) {
             arm_msg.data = {-0.25, 0.0, -1.5, 0.0};
         } else {
-            arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+            arm_msg.data = {0.3, 0.1, 0.3, 1.5, 0.0, 0.0};	
         }
 
         arm_goal_pub_->publish(arm_msg);
@@ -145,7 +145,7 @@ private:
         if (use_takeshi_) {
             arm_msg.data = {0.0, -1.57, -1.57, 0.0};
         } else {
-            arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+            arm_msg.data = {0.0, 0.0, 0.3, 1.5, 0.0, 1.2};
         }
 
         arm_goal_pub_->publish(arm_msg);

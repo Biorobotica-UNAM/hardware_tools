@@ -12,20 +12,6 @@
   <arg name="robot_description"
        default="$(find-pkg-share justina_description)/urdf/justina/justina.xacro"/>
 
-  <!-- Base fuera del namespace hardware si así ya lo consumes -->
-  <include file="$(find-pkg-share base)/launch/base_driver.launch.xml">
-    <arg name="namespace"         value="base"/>
-    <arg name="tf_prefix"         value=""/>
-    <arg name="use_sim_time"      value="$(var use_sim_time)"/>
-    <arg name="launch_jsb"        value="$(var launch_jsb)"/>
-    <arg name="robot_description" value="$(var robot_description)"/>
-    <arg name="hostname"          value="$(var hostname)"/>
-    <arg name="rsp_freq"          value="$(var rsp_freq)"/>
-    <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
-    <arg name="motor_timeout"     value="$(var motor_timeout)"/>
-    <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
-  </include>
-
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
     <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml"/>
