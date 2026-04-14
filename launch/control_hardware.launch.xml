@@ -11,7 +11,9 @@
         <node pkg="hardware_tools"
                 exec="head_control_node"
                 name="head_control_node"
-                output="screen"/>
+                output="screen">
+            <param name="use_takeshi" value="$(var use_takeshi)"/>
+        </node>
 
         <group>
             <push-ros-namespace namespace="pointing"/>
