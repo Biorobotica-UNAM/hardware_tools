@@ -36,8 +36,8 @@ public:
         this->declare_parameter("use_takeshi", false);
         this->declare_parameter("head_goal_topic", "/hardware/head/goal_pose");
         this->declare_parameter("head_state_topic", "/hardware/head/current_pose");
-        this->declare_parameter("arm_goal_topic", "/hardware/arm/goal_pose");
-        this->declare_parameter("camera_frame", "head_pan_link");
+        this->declare_parameter("arm_goal_topic", "/hardware/arms/left_arm/goal_pose");
+        this->declare_parameter("camera_frame", "head_link");
         this->declare_parameter("base_frame", "base_link");
 
         use_takeshi_     = this->get_parameter("use_takeshi").as_bool();
@@ -132,7 +132,7 @@ private:
         if (use_takeshi_) {
             arm_msg.data = {-0.25, 0.0, -1.5, 0.0};
         } else {
-            arm_msg.data = {0.3, 0.1, 0.3, 1.5, 0.0, 0.0};	
+            arm_msg.data = {0.6, 0.1, 0.3, 1.2, 0.0, 0.0};	
         }
 
         arm_goal_pub_->publish(arm_msg);
@@ -217,6 +217,8 @@ private:
     {
         // Stop base
         stopBase();
+
+		rclcpp::sleep_for(std::chrono::seconds(3));
 
         // Reset arm
         resetArmPose();
