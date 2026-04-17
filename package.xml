@@ -3,13 +3,14 @@
 <package format="3">
   <name>hardware_tools</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Hardware tools for Takeshi/HSR utilities and task nodes.</description>
   <maintainer email="rafael.cuellarr@ingenieria.unam.edu">rafael</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
+  <depend>rclcpp_action</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
   <depend>tf2_ros</depend>
@@ -18,7 +19,8 @@
   <depend>sensor_msgs</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>geometry_msgs</depend>
-
+  <depend>actionlib_msgs</depend>
+  <depend>tmc_control_msgs</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
