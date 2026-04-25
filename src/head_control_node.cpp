@@ -19,13 +19,22 @@ public:
   {
 
     // Declare parameters
+    this->declare_parameter<bool>("use_takeshi", false);
+    bool use_takeshi = this->get_parameter("use_takeshi").as_bool();
+
+
     this->declare_parameter<std::string>( "head_goal_topic",          "/hardware/head/goal_pose");
     this->declare_parameter<std::string>( "head_current_pose_topic",  "/hardware/head/current_pose");
     //this->declare_parameter<std::string>( "head_goal_reached_topic",  "/hardware/head/goal_reached");
 
-    this->declare_parameter<std::string>("camera_frame",                "head_rgbd_sensor_rgb_frame");
-    this->declare_parameter<std::string>("base_frame",                  "base_link");
-    this->declare_parameter<std::string>("neck_frame",                  "torso_lift_link");
+    this->declare_parameter<std::string>("base_frame", "base_link");
+    if (!use_takeshi) {
+        this->declare_parameter<std::string>("camera_frame",                "camera_link");
+        this->declare_parameter<std::string>("neck_frame",                  "neck_link");
+    } else {
+        this->declare_parameter<std::string>("camera_frame",                "head_rgbd_sensor_rgb_frame");
+        this->declare_parameter<std::string>("neck_frame",                  "torso_lift_link");
+    }
 
     this->declare_parameter<double>("pan_min", -1.57);
     this->declare_parameter<double>("pan_max", 1.57);

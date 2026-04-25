@@ -32,20 +32,24 @@ public:
       tf_buffer_(this->get_clock()),
       tf_listener_(tf_buffer_)
     {
-        // Params
-        this->declare_parameter("use_takeshi", false);
-        this->declare_parameter("head_goal_topic", "/hardware/head/goal_pose");
-        this->declare_parameter("head_state_topic", "/hardware/head/current_pose");
-        this->declare_parameter("arm_goal_topic", "/hardware/arm/goal_pose");
-        this->declare_parameter("camera_frame", "head_pan_link");
-        this->declare_parameter("base_frame", "base_link");
 
-        use_takeshi_     = this->get_parameter("use_takeshi").as_bool();
-        head_goal_topic_ = this->get_parameter("head_goal_topic").as_string();
-        head_state_topic_= this->get_parameter("head_state_topic").as_string();
-        arm_goal_topic_  = this->get_parameter("arm_goal_topic").as_string();
-        camera_frame_    = this->get_parameter("camera_frame").as_string();
-        base_frame_      = this->get_parameter("base_frame").as_string();
+        use_takeshi_     = this->declare_parameter("use_takeshi", false);
+
+        // Params
+	if (!use_takeshi_) {
+		head_goal_topic_ = "/hardware/head/goal_pose";
+		head_state_topic_ = "/no_sirve";
+		arm_goal_topic_  = "/hardware/arms/left_arm/goal_pose";
+		camera_frame_    = "head_link";
+		base_frame_      = "base_link";
+	} else {
+		head_goal_topic_ = "/hardware/head/goal_pose";
+		head_state_topic_ = "/no_sirve";
+		arm_goal_topic_  = "/hardware/arm/goal_pose";
+		camera_frame_    = "head_pan_link";
+		base_frame_      = "base_link";
+	}
+
 
         // Subs
         head_state_sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
@@ -72,6 +76,10 @@ public:
                                                             std::placeholders::_2));
 
         RCLCPP_INFO(this->get_logger(), "Pointing node started.");
+		RCLCPP_INFO(this->get_logger(), "%s", head_goal_topic_.c_str());
+		RCLCPP_INFO(this->get_logger(), "%s", arm_goal_topic_.c_str());
+		RCLCPP_INFO(this->get_logger(), "%s", camera_frame_.c_str());
+		RCLCPP_INFO(this->get_logger(), "%s", base_frame_.c_str());
     }
 
 private:
@@ -132,7 +140,7 @@ private:
         if (use_takeshi_) {
             arm_msg.data = {-0.25, 0.0, -1.5, 0.0};
         } else {
-            arm_msg.data = {0.5, 0.0, -0.2, 1.2, 0.0, 0.0};
+            arm_msg.data = {0.6, 0.1, 0.3, 1.2, 0.0, 0.0};	
         }
 
         arm_goal_pub_->publish(arm_msg);
@@ -145,7 +153,7 @@ private:
         if (use_takeshi_) {
             arm_msg.data = {0.0, -1.57, -1.57, 0.0};
         } else {
-            arm_msg.data = {0.0, 0.0, -0.3, 1.57, -0.3, 1.57};
+            arm_msg.data = {0.0, 0.0, 0.3, 1.5, 0.0, 1.2};
         }
 
         arm_goal_pub_->publish(arm_msg);
@@ -172,7 +180,7 @@ private:
                 const double angular_speed = 0.6;
 
                 cmd.angular.z = (theta < 0.0) ? -angular_speed : angular_speed;
-                const double duration = std::abs(theta / angular_speed) + 0.7;
+                const double duration = std::abs(theta / angular_speed) + 0.3;
 
                 const auto start = this->now();
 
@@ -217,6 +225,8 @@ private:
     {
         // Stop base
         stopBase();
+
+		rclcpp::sleep_for(std::chrono::seconds(3));
 
         // Reset arm
         resetArmPose();

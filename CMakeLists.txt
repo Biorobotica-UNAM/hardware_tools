@@ -7,11 +7,13 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(actionlib_msgs REQUIRED)
+find_package(tmc_control_msgs REQUIRED)
 
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -30,9 +32,8 @@ add_library(hardware_tools SHARED
 )
 
 add_executable(head_control_node  src/head_control_node.cpp)
-
 add_executable(pointing_node      src/pointing_node.cpp)
-
+add_executable(take_fsm_node      src/take_fsm_node.cpp)
 
 ament_target_dependencies(hardware_tools
   rclcpp
@@ -63,6 +64,14 @@ ament_target_dependencies(pointing_node
   geometry_msgs
 )
 
+ament_target_dependencies(take_fsm_node
+  rclcpp
+  rclcpp_action
+  std_msgs
+  std_srvs
+  tmc_control_msgs
+)
+
 ament_export_dependencies(
   rclcpp
   std_msgs
@@ -81,13 +90,12 @@ install(TARGETS hardware_tools
   DESTINATION lib
 )
 
-install(TARGETS head_control_node
+install(TARGETS
+  head_control_node
+  pointing_node
+  take_fsm_node
   DESTINATION lib/${PROJECT_NAME}
 )
-
-#install(TARGETS pointing_node
-#  DESTINATION lib/${PROJECT_NAME}
-#)
 
 install(
   DIRECTORY launch

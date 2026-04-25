@@ -1,4 +1,5 @@
 <launch>
+    <arg name="use_takeshi" default="false" />
 
   <group>
     <push_ros_namespace namespace="pointing" />
@@ -7,9 +8,25 @@
       pkg="hardware_tools"
       exec="pointing_node"
       name="pointing_node"
-      output="screen"
-    />
+      output="screen">
+
+        <param name="use_takeshi" value="$(var use_takeshi)" />
+
+        <!-- ===== JUSTINA ===== -->
+        <param name="head_goal_topic" value="/hardware/head/goal_pose" unless="$(var use_takeshi)" />
+        <param name="head_state_topic" value="/hardware/head/current_pose" unless="$(var use_takeshi)" />
+        <param name="arm_goal_topic" value="/hardware/arms/left_arm/goal_pose" unless="$(var use_takeshi)" />
+        <param name="camera_frame" value="camera_link" unless="$(var use_takeshi)" />
+        <param name="base_frame" value="base_link" unless="$(var use_takeshi)" />
+
+        <!-- ===== TAKESHI ===== -->
+        <param name="head_goal_topic" value="/takeshi/head/goal_pose" if="$(var use_takeshi)" />
+        <param name="head_state_topic" value="/takeshi/head/current_pose" if="$(var use_takeshi)" />
+        <param name="arm_goal_topic" value="/takeshi/arm/goal_pose" if="$(var use_takeshi)" />
+        <param name="camera_frame" value="head_rgbd_sensor_link" if="$(var use_takeshi)" />
+        <param name="base_frame" value="base_link" if="$(var use_takeshi)" />
+
+    </node>
   </group>
 
 </launch>
-
