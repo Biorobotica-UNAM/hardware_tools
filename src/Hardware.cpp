@@ -90,7 +90,7 @@ bool Hardware::CheckDoor()
 {
     using namespace std::chrono_literals;
 
-    if (!waitForService(cli_check_door_, 500ms))
+    if (!waitForService(cli_check_door_, 3000ms))
     {
         RCLCPP_WARN(node_->get_logger(),
             "Servicio /hardware/door_detector/check no disponible");
@@ -120,7 +120,7 @@ bool Hardware::CheckDoor()
             }
         });
 
-    if (fut.wait_for(500ms) == std::future_status::ready)
+    if (fut.wait_for(3000ms) == std::future_status::ready)
         return fut.get();
 
     RCLCPP_WARN(node_->get_logger(),
@@ -132,7 +132,7 @@ bool Hardware::PointingMotionEnable()
 {
     using namespace std::chrono_literals;
 
-    if (!waitForService(cli_pointing_motion_enable_, 500ms))
+    if (!waitForService(cli_pointing_motion_enable_, 3000ms))
     {
         RCLCPP_WARN(node_->get_logger(),
             "Service /hardware/pointing/enable not available");
@@ -162,7 +162,7 @@ bool Hardware::PointingMotionEnable()
             }
         });
 
-    if (fut.wait_for(500ms) == std::future_status::ready)
+    if (fut.wait_for(3000ms) == std::future_status::ready)
         return fut.get();
 
     RCLCPP_WARN(node_->get_logger(),
@@ -175,7 +175,7 @@ bool Hardware::PointingMotionDisable()
 {
     using namespace std::chrono_literals;
 
-    if (!waitForService(cli_pointing_motion_disable_, 500ms))
+    if (!waitForService(cli_pointing_motion_disable_, 3000ms))
     {
         RCLCPP_WARN(node_->get_logger(),
             "Service /hardware/pointing/disable not available");
@@ -205,7 +205,7 @@ bool Hardware::PointingMotionDisable()
             }
         });
 
-    if (fut.wait_for(500ms) == std::future_status::ready)
+    if (fut.wait_for(3000ms) == std::future_status::ready)
         return fut.get();
 
     RCLCPP_WARN(node_->get_logger(),

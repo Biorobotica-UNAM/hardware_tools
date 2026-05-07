@@ -226,8 +226,6 @@ private:
         // Stop base
         stopBase();
 
-		rclcpp::sleep_for(std::chrono::seconds(3));
-
         // Reset arm
         resetArmPose();
 
