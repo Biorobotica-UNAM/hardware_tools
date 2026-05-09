@@ -33,7 +33,6 @@ add_library(hardware_tools SHARED
 
 add_executable(head_control_node  src/head_control_node.cpp)
 add_executable(pointing_node      src/pointing_node.cpp)
-add_executable(take_fsm_node      src/take_fsm_node.cpp)
 
 ament_target_dependencies(hardware_tools
   rclcpp
@@ -64,14 +63,6 @@ ament_target_dependencies(pointing_node
   geometry_msgs
 )
 
-ament_target_dependencies(take_fsm_node
-  rclcpp
-  rclcpp_action
-  std_msgs
-  std_srvs
-  tmc_control_msgs
-)
-
 ament_export_dependencies(
   rclcpp
   std_msgs
@@ -93,7 +84,6 @@ install(TARGETS hardware_tools
 install(TARGETS
   head_control_node
   pointing_node
-  take_fsm_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
