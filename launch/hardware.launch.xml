@@ -1,73 +1,18 @@
 <?xml version="1.0"?>
 <launch>
 
-  <arg name="use_takeshi"
-       default="false"
-       description="If true, launch Takeshi/HSR hardware; otherwise launch Justina hardware"/>
+  <group>
+    <push_ros_namespace namespace="$(var namespace)"/>
 
-  <arg name="namespace"
-       default="hardware"
-       description="Top-level namespace for hardware nodes"/>
+    <!-- Kinect -->
+    <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml"/>
 
-  <arg name="use_sim_time"
-       default="false"
-       description="Use simulation time"/>
+    <!-- Door detector -->
+    <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml"/>
 
-  <arg name="launch_jsb"
-       default="false"
-       description="Launch joint_state_publisher (Justina only)"/>
+	<!-- Scanner -->
+    <include file="$(find-pkg-share scanner)/launch/scanner.launch.xml"/>
 
-  <arg name="hostname"
-       default="172.27.1.1"
-       description="Robotino hostname or IP address (Justina only)"/>
-
-  <arg name="rsp_freq"
-       default="20.0"
-       description="robot_state_publisher frequency (Justina only)"/>
-
-  <arg name="bumper_timeout"
-       default="0.0"
-       description="Bumper timeout (Justina only)"/>
-
-  <arg name="motor_timeout"
-       default="0.0"
-       description="Motor timeout (Justina only)"/>
-
-  <arg name="launch_odom_tf"
-       default="true"
-       description="Publish odom TF (Justina only)"/>
-
-  <arg name="robot_description"
-       default="$(find-pkg-share justina_description)/urdf/justina.urdf"
-       description="Path to Justina urdf"
-       unless="$(var use_takeshi)"/>
-
-  <!-- Justina hardware -->
-  <include file="$(find-pkg-share hardware_tools)/launch/justina_hardware.launch.xml"
-           unless="$(var use_takeshi)">
-    <arg name="namespace"         value="$(var namespace)"/>
-    <arg name="use_sim_time"      value="$(var use_sim_time)"/>
-    <arg name="launch_jsb"        value="$(var launch_jsb)"/>
-    <arg name="hostname"          value="$(var hostname)"/>
-    <arg name="rsp_freq"          value="$(var rsp_freq)"/>
-    <arg name="bumper_timeout"    value="$(var bumper_timeout)"/>
-    <arg name="motor_timeout"     value="$(var motor_timeout)"/>
-    <arg name="launch_odom_tf"    value="$(var launch_odom_tf)"/>
-    <arg name="robot_description" value="$(var robot_description)"/>
-  </include>
-
-  <!-- Takeshi / HSR hardware -->
-  <include file="$(find-pkg-share hardware_tools)/launch/takeshi_hardware.launch.xml"
-           if="$(var use_takeshi)">
-    <arg name="namespace"    value="$(var namespace)"/>
-    <arg name="use_sim_time" value="$(var use_sim_time)"/>
-  </include>
-
-  <!-- Common hardware control -->
-  <include file="$(find-pkg-share hardware_tools)/launch/control_hardware.launch.xml">
-    <arg name="namespace"    value="$(var namespace)"/>
-    <arg name="use_takeshi"  value="$(var use_takeshi)"/>
-    <arg name="use_sim_time" value="$(var use_sim_time)"/>
-  </include>
+  </group>
 
 </launch>
