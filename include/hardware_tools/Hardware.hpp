@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "geometry_msgs/msg/twist.hpp"
+#include "std_srvs/srv/trigger.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -90,6 +91,12 @@ public:
                   double linear_y,
                   double angular_z);
 
+	// =========================================================
+    // CheckDoor
+    // =========================================================
+
+	bool CheckDoor(std::chrono::seconds timeout = 3s);
+
 private:
 
     rclcpp::Node::SharedPtr node_;
@@ -117,6 +124,9 @@ private:
 
     rclcpp::Client<grippers_interfaces::srv::MoveGrippers>::SharedPtr
         right_gripper_client_;
+
+	rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr
+    	check_door_client_;
 
     // =========================================================
     // Base publisher

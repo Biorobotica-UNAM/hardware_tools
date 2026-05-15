@@ -59,6 +59,13 @@ Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
                 qos,
                 cb_group_clients_);
 
+	check_door_client_ =
+    node_->create_client<
+        std_srvs::srv::Trigger>(
+            "/hardware/door_detector/check",
+            qos,
+            cb_group_clients_);
+
     // =========================================================
     // Base cmd_vel publisher
     // =========================================================
@@ -312,4 +319,37 @@ void Hardware::MoveBase(double linear_x,
     cmd.angular.z = angular_z;
 
     cmd_vel_pub_->publish(cmd);
+}
+
+// ============================================================
+// CheckDoor
+// ============================================================
+
+bool Hardware::CheckDoor(std::chrono::seconds timeout)
+{
+    auto request =
+        std::make_shared<
+            std_srvs::srv::Trigger::Request>();
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            std_srvs::srv::Trigger>(
+                check_door_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "CheckDoor %s: %s",
+                        success ? "OPEN" : "CLOSED",
+                        response->message.c_str());
+                },
+                timeout,
+                "CheckDoor");
+
+    return completed && success;
 }

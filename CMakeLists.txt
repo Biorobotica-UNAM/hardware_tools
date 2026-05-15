@@ -3,18 +3,8 @@ project(hardware_tools)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_action REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(trajectory_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
-find_package(actionlib_msgs REQUIRED)
-find_package(tmc_control_msgs REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-
 find_package(head_interfaces REQUIRED)
 find_package(torso_interfaces REQUIRED)
 find_package(arms_interfaces REQUIRED)
@@ -36,11 +26,8 @@ add_library(hardware_tools SHARED
 
 ament_target_dependencies(hardware_tools
   rclcpp
-  std_msgs
-  sensor_msgs
-  trajectory_msgs
   std_srvs
-  tf2_ros
+  geometry_msgs
   head_interfaces
   torso_interfaces
   arms_interfaces
@@ -63,11 +50,8 @@ install(
 
 ament_export_dependencies(
   rclcpp
-  std_msgs
-  sensor_msgs
-  trajectory_msgs
   std_srvs
-  tf2_ros
+  geometry_msgs
   head_interfaces
   torso_interfaces
   arms_interfaces

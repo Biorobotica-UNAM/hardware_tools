@@ -3,24 +3,15 @@
 <package format="3">
   <name>hardware_tools</name>
   <version>0.0.0</version>
-  <description>Hardware tools for Takeshi/HSR utilities and task nodes.</description>
-  <maintainer email="rafael.cuellarr@ingenieria.unam.edu">rafael</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Hardware tools for Justina.</description>
+  <maintainer email="marco.soriano5102@comunidad.unam.mx">Marco Soriano</maintainer>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>rclcpp_action</depend>
-  <depend>std_msgs</depend>
   <depend>std_srvs</depend>
-  <depend>tf2_ros</depend>
-  <depend>tf2</depend>
-  <depend>trajectory_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>tf2_geometry_msgs</depend>
   <depend>geometry_msgs</depend>
-  <depend>actionlib_msgs</depend>
-  <depend>tmc_control_msgs</depend>
 
   <depend>head_interfaces</depend>
   <depend>torso_interfaces</depend>
