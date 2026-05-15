@@ -22,6 +22,11 @@
   <depend>actionlib_msgs</depend>
   <depend>tmc_control_msgs</depend>
 
+  <depend>head_interfaces</depend>
+  <depend>torso_interfaces</depend>
+  <depend>arms_interfaces</depend>
+  <depend>grippers_interfaces</depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>
