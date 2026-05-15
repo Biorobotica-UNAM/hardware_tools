@@ -1,214 +1,315 @@
 #include "hardware_tools/Hardware.hpp"
 
-#include <future>
+// ============================================================
+// Constructor
+// ============================================================
 
 Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
-    : node_(node)
+: node_(node)
 {
-    pub_goal_gripper_ =
-        node_->create_publisher<std_msgs::msg::Float64>(
-            "/hardware/arms/goal_gripper", 10);
+    cb_group_clients_ =
+        node_->create_callback_group(
+            rclcpp::CallbackGroupType::Reentrant);
 
-    pub_head_angles_ =
-        node_->create_publisher<std_msgs::msg::Float64MultiArray>(
-            "/hardware/head/goal_pose", 10);
-    
-    pub_torso_target_ =
-        node_->create_publisher<std_msgs::msg::Float32>(
-            "/hardware/torso/goal", 10);
+    const rclcpp::QoS qos = rclcpp::ServicesQoS();
 
-    cli_check_door_ =
-        node_->create_client<std_srvs::srv::Trigger>(
-            "/hardware/door_detector/check");
+    // =========================================================
+    // Service clients
+    // =========================================================
 
-    cli_pointing_motion_enable_ =
-        node_->create_client<std_srvs::srv::Trigger>(
-            "/hardware/pointing/enable");
+    torso_client_ =
+        node_->create_client<
+            torso_interfaces::srv::MoveTorso>(
+                "/hardware/torso/move_torso",
+                qos,
+                cb_group_clients_);
 
-    cli_pointing_motion_disable_ =
-        node_->create_client<std_srvs::srv::Trigger>(
-            "/hardware/pointing/disable");
+    head_client_ =
+        node_->create_client<
+            head_interfaces::srv::MoveHead>(
+                "/hardware/head/move_head",
+                qos,
+                cb_group_clients_);
+
+    left_arm_client_ =
+        node_->create_client<
+            arms_interfaces::srv::MoveArms>(
+                "/hardware/arms/move_left_arm",
+                qos,
+                cb_group_clients_);
+
+    right_arm_client_ =
+        node_->create_client<
+            arms_interfaces::srv::MoveArms>(
+                "/hardware/arms/move_right_arm",
+                qos,
+                cb_group_clients_);
+
+    left_gripper_client_ =
+        node_->create_client<
+            grippers_interfaces::srv::MoveGrippers>(
+                "/hardware/grippers/move_left_gripper",
+                qos,
+                cb_group_clients_);
+
+    right_gripper_client_ =
+        node_->create_client<
+            grippers_interfaces::srv::MoveGrippers>(
+                "/hardware/grippers/move_right_gripper",
+                qos,
+                cb_group_clients_);
+
+    // =========================================================
+    // Base cmd_vel publisher
+    // =========================================================
+
+    cmd_vel_pub_ =
+        node_->create_publisher<geometry_msgs::msg::Twist>(
+            "/hardware/base/cmd_vel",
+            rclcpp::QoS(rclcpp::KeepLast(10))
+                .reliable()
+                .transient_local());
 }
 
-// ===== Gripper =====
+// ============================================================
+// MoveTorso
+// ============================================================
 
-void Hardware::OpenGripper()
+bool Hardware::MoveTorso(double position,
+                         std::chrono::seconds timeout)
 {
-    std_msgs::msg::Float64 msg;
-    msg.data = -0.5236;
-    pub_goal_gripper_->publish(msg);
+    auto request =
+        std::make_shared<
+            torso_interfaces::srv::MoveTorso::Request>();
+
+    request->position = position;
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            torso_interfaces::srv::MoveTorso>(
+                torso_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "MoveTorso %s: %s",
+                        success ? "SUCCESS" : "FAILED",
+                        response->message.c_str());
+                },
+                timeout,
+                "MoveTorso");
+
+    return completed && success;
 }
 
-void Hardware::CloseGripper()
+// ============================================================
+// MoveHead
+// ============================================================
+
+bool Hardware::MoveHead(const std::vector<double>& positions,
+                        std::chrono::seconds timeout)
 {
-    std_msgs::msg::Float64 msg;
-    msg.data = 0.2618;
-    pub_goal_gripper_->publish(msg);
+    auto request =
+        std::make_shared<
+            head_interfaces::srv::MoveHead::Request>();
+
+    request->positions = positions;
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            head_interfaces::srv::MoveHead>(
+                head_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "MoveHead %s: %s",
+                        success ? "SUCCESS" : "FAILED",
+                        response->message.c_str());
+                },
+                timeout,
+                "MoveHead");
+
+    return completed && success;
 }
 
-void Hardware::RelaxGripper()
+// ============================================================
+// MoveRightArm
+// ============================================================
+
+bool Hardware::MoveRightArm(
+    const std::vector<double>& positions,
+    int speed,
+    std::chrono::seconds timeout)
 {
-    std_msgs::msg::Float64 msg;
-    msg.data = 0.0;
-    pub_goal_gripper_->publish(msg);
+    auto request =
+        std::make_shared<
+            arms_interfaces::srv::MoveArms::Request>();
+
+    request->positions = positions;
+    request->speed = speed;
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            arms_interfaces::srv::MoveArms>(
+                right_arm_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "MoveRightArm %s: %s",
+                        success ? "SUCCESS" : "FAILED",
+                        response->message.c_str());
+                },
+                timeout,
+                "MoveRightArm");
+
+    return completed && success;
 }
 
-// ===== Head =====
+// ============================================================
+// MoveLeftArm
+// ============================================================
 
-void Hardware::MoveHead(double pan, double tilt)
+bool Hardware::MoveLeftArm(
+    const std::vector<double>& positions,
+    int speed,
+    std::chrono::seconds timeout)
 {
-    std_msgs::msg::Float64MultiArray msg;
-    msg.data = {pan, tilt};
-    pub_head_angles_->publish(msg);
+    auto request =
+        std::make_shared<
+            arms_interfaces::srv::MoveArms::Request>();
+
+    request->positions = positions;
+    request->speed = speed;
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            arms_interfaces::srv::MoveArms>(
+                left_arm_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "MoveLeftArm %s: %s",
+                        success ? "SUCCESS" : "FAILED",
+                        response->message.c_str());
+                },
+                timeout,
+                "MoveLeftArm");
+
+    return completed && success;
 }
 
-// ===== Torso =====
+// ============================================================
+// MoveRightGripper
+// ============================================================
 
-void Hardware::MoveTorso(float target)
+bool Hardware::MoveRightGripper(
+    const std::string& command,
+    std::chrono::seconds timeout)
 {
-    std_msgs::msg::Float32 msg;
-    msg.data = target;
-    pub_torso_target_->publish(msg);
+    auto request =
+        std::make_shared<
+            grippers_interfaces::srv::MoveGrippers::Request>();
+
+    request->cmd = command;
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            grippers_interfaces::srv::MoveGrippers>(
+                right_gripper_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "MoveRightGripper %s [%s]: %s",
+                        success ? "SUCCESS" : "FAILED",
+                        response->status.c_str(),
+                        response->message.c_str());
+                },
+                timeout,
+                "MoveRightGripper");
+
+    return completed && success;
 }
 
-// ---------------------------------------------------------
-// Wait for service
-// ---------------------------------------------------------
+// ============================================================
+// MoveLeftGripper
+// ============================================================
 
-bool Hardware::waitForService(
-    const rclcpp::ClientBase::SharedPtr& client,
-    const std::chrono::milliseconds& timeout) const
+bool Hardware::MoveLeftGripper(
+    const std::string& command,
+    std::chrono::seconds timeout)
 {
-    return client->wait_for_service(timeout);
+    auto request =
+        std::make_shared<
+            grippers_interfaces::srv::MoveGrippers::Request>();
+
+    request->cmd = command;
+
+    bool success = false;
+
+    bool completed =
+        call_service<
+            grippers_interfaces::srv::MoveGrippers>(
+                left_gripper_client_,
+                request,
+                [&](auto response)
+                {
+                    success = response->success;
+
+                    RCLCPP_INFO(
+                        node_->get_logger(),
+                        "MoveLeftGripper %s [%s]: %s",
+                        success ? "SUCCESS" : "FAILED",
+                        response->status.c_str(),
+                        response->message.c_str());
+                },
+                timeout,
+                "MoveLeftGripper");
+
+    return completed && success;
 }
 
-// ---------------------------------------------------------
-// Check door
-// ---------------------------------------------------------
+// ============================================================
+// MoveBase
+// ============================================================
 
-bool Hardware::CheckDoor()
+void Hardware::MoveBase(double linear_x,
+                        double linear_y,
+                        double angular_z)
 {
-    using namespace std::chrono_literals;
+    geometry_msgs::msg::Twist cmd;
 
-    if (!waitForService(cli_check_door_, 3000ms))
-    {
-        RCLCPP_WARN(node_->get_logger(),
-            "Servicio /hardware/door_detector/check no disponible");
-        return false;
-    }
+    cmd.linear.x  = linear_x;
+    cmd.linear.y  = linear_y;
+    cmd.angular.z = angular_z;
 
-    auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
-
-    auto prom = std::make_shared<std::promise<bool>>();
-    auto fut = prom->get_future();
-
-    cli_check_door_->async_send_request(
-        request,
-        [this, prom](
-            std::shared_future<
-                std_srvs::srv::Trigger::Response::SharedPtr> future)
-        {
-            try
-            {
-                prom->set_value(future.get()->success);
-            }
-            catch (const std::exception& e)
-            {
-                RCLCPP_WARN(node_->get_logger(),
-                    "Excepción en DoorDetector: %s", e.what());
-                prom->set_value(false);
-            }
-        });
-
-    if (fut.wait_for(3000ms) == std::future_status::ready)
-        return fut.get();
-
-    RCLCPP_WARN(node_->get_logger(),
-        "Timeout esperando DoorDetector");
-    return false;
-}
-
-bool Hardware::PointingMotionEnable()
-{
-    using namespace std::chrono_literals;
-
-    if (!waitForService(cli_pointing_motion_enable_, 3000ms))
-    {
-        RCLCPP_WARN(node_->get_logger(),
-            "Service /hardware/pointing/enable not available");
-        return false;
-    }
-
-    auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
-
-    auto prom = std::make_shared<std::promise<bool>>();
-    auto fut = prom->get_future();
-
-    cli_pointing_motion_enable_->async_send_request(
-        request,
-        [this, prom](
-            std::shared_future<
-                std_srvs::srv::Trigger::Response::SharedPtr> future)
-        {
-            try
-            {
-                prom->set_value(future.get()->success);
-            }
-            catch (const std::exception& e)
-            {
-                RCLCPP_WARN(node_->get_logger(),
-                    "Excepción en PointingMotion: %s", e.what());
-                prom->set_value(false);
-            }
-        });
-
-    if (fut.wait_for(3000ms) == std::future_status::ready)
-        return fut.get();
-
-    RCLCPP_WARN(node_->get_logger(),
-        "Timeout esperando PointingMotion");
-    return false;
-}
-
-
-bool Hardware::PointingMotionDisable()
-{
-    using namespace std::chrono_literals;
-
-    if (!waitForService(cli_pointing_motion_disable_, 3000ms))
-    {
-        RCLCPP_WARN(node_->get_logger(),
-            "Service /hardware/pointing/disable not available");
-        return false;
-    }
-
-    auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
-
-    auto prom = std::make_shared<std::promise<bool>>();
-    auto fut = prom->get_future();
-
-    cli_pointing_motion_disable_->async_send_request(
-        request,
-        [this, prom](
-            std::shared_future<
-                std_srvs::srv::Trigger::Response::SharedPtr> future)
-        {
-            try
-            {
-                prom->set_value(future.get()->success);
-            }
-            catch (const std::exception& e)
-            {
-                RCLCPP_WARN(node_->get_logger(),
-                    "Excepción en PointingMotion: %s", e.what());
-                prom->set_value(false);
-            }
-        });
-
-    if (fut.wait_for(3000ms) == std::future_status::ready)
-        return fut.get();
-
-    RCLCPP_WARN(node_->get_logger(),
-        "Timeout esperando PointingMotion");
-    return false;
+    cmd_vel_pub_->publish(cmd);
 }
