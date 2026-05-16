@@ -67,7 +67,7 @@ Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
             cb_group_clients_);
 
     // =========================================================
-    // Base cmd_vel publisher
+    // Publishers
     // =========================================================
 
     cmd_vel_pub_ =
@@ -76,6 +76,49 @@ Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
             rclcpp::QoS(rclcpp::KeepLast(10))
                 .reliable()
                 .transient_local());
+
+	// =========================================================
+    // Subscribers
+    // =========================================================
+	head_pose_sub_ =
+    node_->create_subscription<std_msgs::msg::Float64MultiArray>(
+        "/hardware/head/current_pose",
+        10,
+        [this](const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+        {
+			std::lock_guard<std::mutex> lock(pose_mutex_);
+            current_pose_["head"] = msg->data;
+        });
+
+	left_arm_pose_sub_ =
+    node_->create_subscription<std_msgs::msg::Float64MultiArray>(
+        "/hardware/arms/left_arm/current_pose",
+        10,
+        [this](const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+        {
+            std::lock_guard<std::mutex> lock(pose_mutex_);
+            current_pose_["left_arm"] = msg->data;
+        });
+
+	right_arm_pose_sub_ =
+    node_->create_subscription<std_msgs::msg::Float64MultiArray>(
+        "/hardware/arms/right_arm/current_pose",
+        10,
+        [this](const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+        {
+            std::lock_guard<std::mutex> lock(pose_mutex_);
+            current_pose_["right_arm"] = msg->data;
+        });
+
+	torso_pose_sub_ =
+    node_->create_subscription<std_msgs::msg::Float64MultiArray>(
+        "/hardware/torso/current_pose",
+        10,
+        [this](const std_msgs::msg::Float64MultiArray::SharedPtr msg)
+        {
+            std::lock_guard<std::mutex> lock(pose_mutex_);
+            current_pose_["torso"] = msg->data;
+        });
 }
 
 // ============================================================
@@ -353,3 +396,50 @@ bool Hardware::CheckDoor(std::chrono::seconds timeout)
 
     return completed && success;
 }
+
+// ============================================================
+// GetCurrentPose (Complete)
+// ============================================================
+
+std::vector<double> Hardware::GetCurrentPose(
+    const std::string& component) const
+{
+    std::lock_guard<std::mutex> lock(pose_mutex_);
+
+    auto it = current_pose_.find(component);
+
+    if (it == current_pose_.end())
+    {
+        RCLCPP_WARN(node_->get_logger(),
+                    "Unknown component: %s",
+                    component.c_str());
+
+        return {};
+    }
+
+    return it->second;
+}
+
+// ============================================================
+// GetCurrentPose (Indexed)
+// ============================================================
+
+double Hardware::GetCurrentPose(
+    const std::string& component,
+    size_t index) const
+{
+    auto pose = GetCurrentPose(component);
+
+    if (index >= pose.size())
+    {
+        RCLCPP_WARN(node_->get_logger(),
+                    "Index %ld out of bounds for %s",
+                    index,
+                    component.c_str());
+
+        return 0.0;
+    }
+
+    return pose[index];
+}
+

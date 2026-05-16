@@ -28,7 +28,10 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <mutex>
+#include <unordered_map>
 
+#include "std_msgs/msg/float64_multi_array.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "std_srvs/srv/trigger.hpp"
 
@@ -97,11 +100,30 @@ public:
 
 	bool CheckDoor(std::chrono::seconds timeout = 3s);
 
+	// ============================================================
+	// GetCurrentPose (Complete)
+	// ============================================================
+
+	std::vector<double> GetCurrentPose(
+		const std::string& component) const;
+
+	// ============================================================
+	// GetCurrentPose (Indexed)
+	// ============================================================
+
+	double GetCurrentPose(
+		const std::string& component,
+		size_t index) const;
+
 private:
 
     rclcpp::Node::SharedPtr node_;
 
     rclcpp::CallbackGroup::SharedPtr cb_group_clients_;
+
+	mutable std::mutex pose_mutex_;
+
+	std::unordered_map<std::string, std::vector<double>> current_pose_;
 
     // =========================================================
     // Clients
@@ -128,8 +150,24 @@ private:
 	rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr
     	check_door_client_;
 
+	// =========================================================
+    // Subscribers
     // =========================================================
-    // Base publisher
+
+	rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr
+    	head_pose_sub_;
+
+	rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr
+		left_arm_pose_sub_;
+
+	rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr
+		right_arm_pose_sub_;
+
+	rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr
+		torso_pose_sub_;
+
+    // =========================================================
+    // Publishers
     // =========================================================
 
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr
