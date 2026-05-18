@@ -41,6 +41,7 @@
 #include "grippers_interfaces/srv/move_grippers.hpp"
 #include "head_interfaces/srv/move_head.hpp"
 #include "torso_interfaces/srv/move_torso.hpp"
+#include "geometry_msgs/msg/point_stamped.hpp"
 
 using namespace std::chrono_literals;
 
@@ -115,6 +116,11 @@ public:
 		const std::string& component,
 		size_t index) const;
 
+    // ============================================================
+    // Look At
+    // ============================================================
+    void LookAt(const geometry_msgs::msg::PointStamped &point) const;
+
 private:
 
     rclcpp::Node::SharedPtr node_;
@@ -172,6 +178,9 @@ private:
 
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr
         cmd_vel_pub_;
+
+    rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr
+        look_at_pub_;
 
     // =========================================================
     // Template Method

@@ -77,6 +77,12 @@ Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
                 .reliable()
                 .transient_local());
 
+    look_at_pub_ = 
+        node_->create_publisher<geometry_msgs::msg::PointStamped>(
+            "hardware/head/look_at",
+            rclcpp::QoS(rclcpp::KeepLast(10))
+        );
+
 	// =========================================================
     // Subscribers
     // =========================================================
@@ -443,3 +449,10 @@ double Hardware::GetCurrentPose(
     return pose[index];
 }
 
+// ============================================================
+// LookAt
+// ============================================================
+
+void Hardware::LookAt(const geometry_msgs::msg::PointStamped &point) const{
+    look_at_pub_->publish(point);
+}
