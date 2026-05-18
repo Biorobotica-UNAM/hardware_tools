@@ -456,3 +456,11 @@ double Hardware::GetCurrentPose(
 void Hardware::LookAt(const geometry_msgs::msg::PointStamped &point) const{
     look_at_pub_->publish(point);
 }
+
+void Hardware::LookAt(const geometry_msgs::msg::PoseStamped &pose) const{
+
+    geometry_msgs::msg::PointStamped ps;
+    ps.point = pose.pose.position;
+    ps.header = pose.header;
+    look_at_pub_->publish(ps);
+}

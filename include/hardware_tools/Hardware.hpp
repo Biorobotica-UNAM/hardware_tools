@@ -42,6 +42,7 @@
 #include "head_interfaces/srv/move_head.hpp"
 #include "torso_interfaces/srv/move_torso.hpp"
 #include "geometry_msgs/msg/point_stamped.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
 
 using namespace std::chrono_literals;
 
@@ -120,6 +121,8 @@ public:
     // Look At
     // ============================================================
     void LookAt(const geometry_msgs::msg::PointStamped &point) const;
+
+    void LookAt(const geometry_msgs::msg::PoseStamped &pose) const;
 
 private:
 
