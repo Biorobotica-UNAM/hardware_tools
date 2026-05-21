@@ -374,7 +374,7 @@ void Hardware::MoveBase(double linear_x,
 // CheckDoor
 // ============================================================
 
-bool Hardware::CheckDoor(std::chrono::seconds timeout)
+Hardware::DoorCheckResult Hardware::CheckDoorState(std::chrono::seconds timeout)
 {
     auto request =
         std::make_shared<
@@ -400,7 +400,20 @@ bool Hardware::CheckDoor(std::chrono::seconds timeout)
                 timeout,
                 "CheckDoor");
 
-    return completed && success;
+    // Service errors are not the same as a closed door; keep them distinguishable
+    // so the supervisor can decide whether to retry or continue.
+    if (!completed) {
+        return DoorCheckResult::SERVICE_FAILED;
+    }
+
+    // The Trigger response success field is the actual door state reported by the detector.
+    return success ? DoorCheckResult::OPEN : DoorCheckResult::CLOSED;
+}
+
+bool Hardware::CheckDoor(std::chrono::seconds timeout)
+{
+    // Existing callers keep the old behavior: true only when the door is open.
+    return CheckDoorState(timeout) == DoorCheckResult::OPEN;
 }
 
 // ============================================================

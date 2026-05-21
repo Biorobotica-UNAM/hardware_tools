@@ -49,6 +49,12 @@ using namespace std::chrono_literals;
 class Hardware
 {
 public:
+    // Keeps the measured door state separate from transport/service failures.
+    enum class DoorCheckResult {
+        OPEN,
+        CLOSED,
+        SERVICE_FAILED
+    };
 
     explicit Hardware(const rclcpp::Node::SharedPtr& node);
 
@@ -97,9 +103,12 @@ public:
                   double angular_z);
 
 	// =========================================================
-    // CheckDoor
+	// CheckDoor
     // =========================================================
 
+	DoorCheckResult CheckDoorState(std::chrono::seconds timeout = 3s);
+
+	// Backward-compatible boolean API: true only means the door is open.
 	bool CheckDoor(std::chrono::seconds timeout = 3s);
 
 	// ============================================================
