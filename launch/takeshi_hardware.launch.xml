@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="namespace"    default="hardware"/>
+  <arg name="use_sim_time" default="false"/>
+
+  <group>
+    <push-ros-namespace namespace="$(var namespace)"/>
+
+    <!--node pkg="hsr_hardware"
+          exec="hsr_bringup"
+          name="hsr_bringup"
+          output="screen"/-->
+
+    <node pkg="hsr_hardware"
+          exec="hsr_arm_node"
+          name="hsr_arm_node"
+          output="screen"/>
+
+    <node pkg="hsr_hardware"
+          exec="hsr_head_node"
+          name="hsr_head_node"
+          output="screen"/>
+
+    <node pkg="hsr_hardware"
+          exec="hsr_talk_node"
+          name="hsr_talk_node"
+          output="screen"/>
+
+    <node pkg="hsr_hardware"
+          exec="hsr_bumper_node"
+          name="hsr_bumper_node"
+          output="screen"/>
+
+    <node pkg="depth_image_proc"
+          exec="point_cloud_xyz_node"
+          name="point_cloud_xyz"
+          args="--ros-args --log-level error"
+          output="screen">
+
+      <remap from="image_rect"  to="/head_rgbd_sensor/depth_registered/image_rect_raw"/>
+      <remap from="camera_info" to="/head_rgbd_sensor/depth_registered/camera_info"/>
+      <remap from="points"      to="/hardware/camera/points"/>
+    </node>
+
+  </group>
+
+<!-- Relays -->
+  <group>
+    <node pkg="topic_tools"
+      exec="relay"
+      name="relay_scan"
+      output="screen"
+      args="/scan /hardware/base/scan ">
+    </node>
+
+    <node pkg="topic_tools"
+        exec="relay"
+        name="relay_odom"
+        output="screen"
+        args="/switched_odom /hardware/base/odom ">
+    </node>
+
+    <node pkg="topic_tools"
+        exec="relay"
+        name="relay_cmd_vel"
+        output="screen"
+        args="/hardware/base/cmd_vel /omni_base_controller/cmd_vel">
+    </node>
+
+    <node pkg="topic_tools"
+      exec="relay"
+      name="relay_camera_rgb"
+      output="screen"
+      args="/head_rgbd_sensor/rgb/image_rect_color /hardware/camera/image_raw">
+    </node>
+
+    <node pkg="topic_tools" 
+      exec="relay" 
+      name="relay_amcl_pose" 
+      output="screen"
+      args="/navigation/amcl_pose /laser_2d_pose">
+    </node>
+  </group>
+
+</launch>
