@@ -1,17 +1,28 @@
 <?xml version="1.0"?>
 <launch>
 
+  <!-- ===================== -->
+  <!--       Arguments       -->
+  <!-- ===================== -->
+  <arg name="namespace" default="hardware"/>
+  <arg name="use_takeshi" default="false"/>
+
   <group>
     <push_ros_namespace namespace="$(var namespace)"/>
 
-    <!-- Kinect -->
-    <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml"/>
+    <!-- Kinect: only launch when NOT using Takeshi hardware -->
+    <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml"
+             unless="$(var use_takeshi)"/>
 
     <!-- Door detector -->
     <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml"/>
 
-	<!-- Scanner -->
+    <!-- Scanner -->
     <include file="$(find-pkg-share scanner)/launch/scanner.launch.xml"/>
+
+    <!-- Takeshi hardware -->
+    <include file="$(find-pkg-share hardware_tools)/launch/takeshi_hardware.launch.xml"
+             if="$(var use_takeshi)"/>
 
   </group>
 
