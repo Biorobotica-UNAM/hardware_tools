@@ -81,7 +81,7 @@ Hardware::Hardware(const rclcpp::Node::SharedPtr& node)
 
     look_at_pub_ = 
         node_->create_publisher<geometry_msgs::msg::PointStamped>(
-            "hardware/head/look_at",
+            "/hardware/head/look_at",
             rclcpp::QoS(rclcpp::KeepLast(10))
         );
 
