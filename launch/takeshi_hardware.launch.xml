@@ -7,10 +7,10 @@
   <group>
     <push-ros-namespace namespace="$(var namespace)"/>
 
-    <node pkg="hsr_hardware"
+    <!--node pkg="hsr_hardware"
           exec="hsr_bringup"
           name="hsr_bringup"
-          output="screen"/>
+          output="screen"/-->
 
     <node pkg="hsr_hardware"
           exec="hsr_arm_node"
