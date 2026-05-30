@@ -77,12 +77,12 @@ public:
     // =========================================================
 
     bool MoveRightArm(const std::vector<double>& positions,
-                      int speed = 20,
-                      std::chrono::seconds timeout = 15s);
+                      int speed = 50,
+                      std::chrono::seconds timeout = 10s);
 
     bool MoveLeftArm(const std::vector<double>& positions,
-                     int speed = 20,
-                     std::chrono::seconds timeout = 15s);
+                     int speed = 50,
+                     std::chrono::seconds timeout = 10s);
 
     // =========================================================
     // Grippers
