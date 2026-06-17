@@ -65,7 +65,7 @@
         exec="relay"
         name="relay_cmd_vel"
         output="screen"
-        args="/hardware/base/cmd_vel /omni_base_controller/cmd_vel">
+        args="/hardware/base/cmd_vel /omni_base_controller/cmd_vel --ros-args --log-level error">
     </node>
 
     <node pkg="topic_tools"
