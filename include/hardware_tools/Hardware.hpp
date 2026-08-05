@@ -30,6 +30,7 @@
 #include <vector>
 #include <mutex>
 #include <unordered_map>
+#include <cmath>
 
 #include "std_msgs/msg/float64_multi_array.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -92,15 +93,15 @@ public:
                           std::chrono::seconds timeout = 10s);
 
     bool MoveLeftGripper(const std::string& command,
-                         std::chrono::seconds timeout = 10s);
+                         std::chrono::seconds timeout = 10s); 
 
-    // =========================================================
-    // Base
-    // =========================================================
+    // ============================================================
+    // MoveBase
+    // ============================================================
 
     void MoveBase(double linear_x,
-                  double linear_y,
-                  double angular_z);
+                            double linear_y,
+                            double angular_z);    
 
 	// =========================================================
 	// CheckDoor
@@ -193,6 +194,14 @@ private:
 
     rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr
         look_at_pub_;
+
+    // =========================================================
+    // Timers
+    // =========================================================
+
+	rclcpp::TimerBase::SharedPtr publish_timer_;
+
+    rclcpp::TimerBase::SharedPtr timeout_timer_;
 
     // =========================================================
     // Template Method

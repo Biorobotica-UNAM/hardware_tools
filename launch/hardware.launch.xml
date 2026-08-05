@@ -1,26 +1,60 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- ===================== -->
-  <!--       Arguments       -->
-  <!-- ===================== -->
   <arg name="namespace" default="hardware"/>
   <arg name="use_takeshi" default="false"/>
 
   <group>
     <push_ros_namespace namespace="$(var namespace)"/>
 
-    <!-- Kinect: only launch when NOT using Takeshi hardware -->
-    <include file="$(find-pkg-share kinect_ros2)/launch/kinect.launch.xml"
-             unless="$(var use_takeshi)"/>
+    <node pkg="rclcpp_components"
+          exec="component_container"
+          name="container"
+          output="screen"/>
 
-    <!-- Door detector -->
+    <load_composable_node target="/hardware/container">
+      <composable_node
+          pkg="openni2_camera"
+          plugin="openni2_wrapper::OpenNI2Driver"
+          name="driver">
+
+        <param name="depth_registration" value="true"/>
+        <param name="use_device_time" value="true"/>
+
+        <param name="rgb_frame_id" value="camera_color_optical_frame"/>
+        <param name="depth_frame_id" value="camera_depth_optical_frame"/>
+        <param name="ir_frame_id" value="camera_depth_optical_frame"/>
+
+        <remap from="rgb/image_raw" to="camera/image_raw"/>
+        <remap from="rgb/camera_info" to="camera/camera_info"/>
+        
+        <remap from="depth/image" to="camera/depth_registered/image_raw"/>
+        
+      </composable_node>
+    </load_composable_node>
+
+    <load_composable_node target="/hardware/container">
+      <composable_node
+          pkg="depth_image_proc"
+          plugin="depth_image_proc::PointCloudXyzrgbNode"
+          name="points_xyzrgb">
+
+        <param name="queue_size" value="10"/>
+
+        <remap from="rgb/image_rect_color" to="camera/image_raw"/>
+        <remap from="rgb/camera_info" to="camera/camera_info"/>
+
+        <remap from="depth_registered/image_rect" to="camera/depth_registered/image_raw"/>
+
+        <remap from="points" to="camera/points"/>
+
+      </composable_node>
+    </load_composable_node>
+    
     <include file="$(find-pkg-share door_detector)/launch/door_detector.launch.xml"/>
 
-    <!-- Scanner -->
     <include file="$(find-pkg-share scanner)/launch/scanner.launch.xml"/>
 
-    <!-- Takeshi hardware -->
     <include file="$(find-pkg-share hardware_tools)/launch/takeshi_hardware.launch.xml"
              if="$(var use_takeshi)"/>
 
