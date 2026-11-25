@@ -1,0 +1,14 @@
+hardware_manager:
+  ros__parameters:
+    # TODO(DESIGN_REVIEW): Review the public endpoint and timeout defaults.
+    action_name: /hardware/execute
+    hardware_file: config/takeshi/hardware.yaml
+    motions_file: config/takeshi/motions.yaml
+    server_timeout: 2.0
+    goal_response_timeout: 2.0
+    state_timeout: 0.5
+    cancel_timeout: 2.0
+    execution_margin: 1.0
+    execution_margin_factor: 0.5
+    queue_timeout: 30.0
+    feedback_rate: 10.0

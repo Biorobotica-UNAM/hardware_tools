@@ -1,0 +1,8 @@
+# TODO(DESIGN_REVIEW): Review motion definitions against native hardware.
+motions:
+  head_center:
+    description: Center head pan and tilt.
+    waypoints:
+      - time: 2.0
+        positions:
+          HEAD: [0.0, 0.0]

@@ -1,0 +1,40 @@
+# Operating velocity and acceleration limits from Toyota HSR Project (ROS 2 Humble).
+# Revolute joints use rad/s and rad/s². The lift uses m/s and m/s².
+# TODO(DESIGN_REVIEW): Validate interpolation and synchronization on physical controllers.
+# Position bounds come from hsrb4s.urdf, narrowed for HEAD by the existing HSR head node.
+joints:
+  head_pan_joint:   {type: revolute, lower: -3.14, upper: 1.74, velocity: 1.0, acceleration: 1.0, tolerance: 0.05}
+  head_tilt_joint:  {type: revolute, lower: -0.90, upper: 0.47, velocity: 1.0, acceleration: 1.0, tolerance: 0.05}
+  arm_lift_joint:   {type: prismatic, lower: 0.0, upper: 0.69, velocity: 0.15, acceleration: 0.15, tolerance: 0.005}
+  arm_flex_joint:   {type: revolute, lower: -2.62, upper: 0.0, velocity: 1.0, acceleration: 1.0, tolerance: 0.01}
+  arm_roll_joint:   {type: revolute, lower: -2.09, upper: 3.84, velocity: 1.0, acceleration: 1.0, tolerance: 0.01}
+  wrist_flex_joint: {type: revolute, lower: -1.92, upper: 1.22, velocity: 1.0, acceleration: 1.0, tolerance: 0.01}
+  wrist_roll_joint: {type: revolute, lower: -1.92, upper: 3.67, velocity: 1.0, acceleration: 1.0, tolerance: 0.01}
+controllers:
+  head:
+    action: /head_trajectory_controller/follow_joint_trajectory
+    state_topic: /head_trajectory_controller/controller_state
+    joints: [head_pan_joint, head_tilt_joint]
+  arm:
+    action: /arm_trajectory_controller/follow_joint_trajectory
+    state_topic: /arm_trajectory_controller/controller_state
+    joints: [arm_lift_joint, arm_flex_joint, arm_roll_joint, wrist_flex_joint, wrist_roll_joint]
+components:
+  HEAD:
+    controller: head
+    joints: [head_pan_joint, head_tilt_joint]
+    policy: CLAMP
+    min_duration: 0.1
+  TORSO:
+    controller: arm
+    joints: [arm_lift_joint]
+    policy: STRICT
+    min_duration: 0.1
+  LEFT_ARM:
+    controller: arm
+    joints: [arm_flex_joint, arm_roll_joint, wrist_flex_joint, wrist_roll_joint]
+    policy: STRICT
+    min_duration: 0.1
+  RIGHT_ARM:
+    available: false
+    policy: STRICT
